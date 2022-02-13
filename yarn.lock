@@ -828,6 +828,11 @@
   dependencies:
     "@sinonjs/fake-timers" "^7.1.0"
 
+"@types/supports-color@^8.1.1":
+  "integrity" "sha512-dPWnWsf+kzIG140B8z2w3fr5D03TLWbOAFQl45xUpI3vcizeXriNR5VYkWZ+WTMsUHqZ9Xlt3hrxGNANFyNQfw=="
+  "resolved" "https://registry.npmjs.org/@types/supports-color/-/supports-color-8.1.1.tgz"
+  "version" "8.1.1"
+
 "@types/vinyl@^2.0.4":
   "integrity" "sha512-ayJ0iOCDNHnKpKTgBG6Q6JOnHTj9zFta+3j2b8Ejza0e4cvRyMn0ZoLEmbPrTHe5YYRlDYPvPWVdV4cTaRyH7g=="
   "resolved" "https://registry.npmjs.org/@types/vinyl/-/vinyl-2.0.6.tgz"
