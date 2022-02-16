@@ -27,7 +27,7 @@ export class Database extends Onboard {
 		{ name: 'SQLite', value: 'sqlite3' },
 		{ name: 'MSSQL', value: 'tedious' },
 		{ name: 'Oracle', value: 'oracledb' },
-		{ name: color.dim('I will set this later'), value: 'mysql' },
+		{ name: color.dim('I will set this later'), value: 'sqlite3' },
 	];
 
 	/**
@@ -54,7 +54,7 @@ export class Database extends Onboard {
 				return 'oracledb';
 
 			default:
-				return 'mysql'
+				return 'sqlite3'
 		}
 	}
 }
