@@ -1,15 +1,15 @@
 {
   "name": "@formidablejs/installer",
-  "version": "0.0.0",
-  "description": "oclif example Hello World CLI",
+  "version": "0.0.1",
+  "description": "The Formidable application installer",
   "author": "Donald Pakkies @donaldp",
   "bin": {
     "formidable": "./bin/run"
   },
-  "homepage": "https://github.com/donaldp/hello-world",
+  "homepage": "https://formidablejs.org",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "donaldp/hello-world",
+  "repository": "https://github.com/formidablejs/installer",
   "files": [
     "/bin",
     "/dist",
@@ -66,7 +66,7 @@
   "engines": {
     "node": ">=12.0.0"
   },
-  "bugs": "https://github.com/donaldp/hello-world/issues",
+  "bugs": "https://github.com/formidablejs/installer/issues",
   "keywords": [
     "oclif"
   ],
