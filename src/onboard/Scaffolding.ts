@@ -22,7 +22,7 @@ export class Scaffolding extends Onboard {
 	 */
 	static choices: Array<String | Object> = [
 		{
-			name: 'Blank Canvans',
+			name: 'Blank Canvas',
 			value: 'blank',
 		},
 		{
