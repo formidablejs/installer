@@ -77,7 +77,7 @@ export default class New extends Command {
 
 	/**
 	 * Execute command
-	 * @returns Promise<void>
+	 * @returns {Promise<void>}
 	 */
 	public async run(): Promise<void> {
 		const { args, flags } = await this.parse(New);
