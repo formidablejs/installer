@@ -9,7 +9,7 @@ import { MailPublishable } from '../publishable/MailPublishable';
 import { PrettyErrorsModifier } from '../modifier/PrettyErrorsModifier';
 import { ReactHook } from '../hooks/ReactHook';
 import { SPAPublishable } from '../publishable/SPAPublishable';
-import { spawnSync } from 'child_process';
+import { execSync } from 'child_process';
 import { tmpdir } from 'os';
 import { updateLine } from './updateLine';
 import { VueHook } from '../hooks/VueHook';
@@ -54,9 +54,7 @@ export class Scaffold {
 	 * @param {New} command
 	 * @returns {void}
 	 */
-	constructor(protected appName: string, protected output: string, protected command: New) {
-		//
-	}
+	constructor(protected appName: string, protected output: string, protected command: New) {}
 
 	/**
 	 * Check if scaffold was successful.
@@ -133,8 +131,8 @@ export class Scaffold {
 		const deps = this.getDependencies();
 
 		/** install dependencies. */
-		spawnSync(
-			this.command.onboarding.manager ?? 'npm', [deps.length > 0 && this.command.onboarding.manager === 'yarn' ? 'add' : 'install', ...deps, '--legacy-peer-deps'],
+		execSync(
+			`${this.command.onboarding.manager ?? 'npm'} ${deps.length > 0 && this.command.onboarding.manager === 'yarn' ? 'add' : 'install'} ${deps.join(' ')} --legacy-peer-deps`,
 			{ cwd: this.output, stdio: 'inherit' }
 		);
 
@@ -243,7 +241,7 @@ export class Scaffold {
 	public generateKey(): Scaffold {
 		this.command.log(' ');
 
-		spawnSync('./node_modules/.bin/craftsman', ['key'], {
+		execSync(`${join('node_modules', '.bin', 'craftsman')} key`, {
 			cwd: this.output, stdio: 'inherit'
 		});
 
@@ -370,7 +368,7 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public cache(): Scaffold {
-		spawnSync('./node_modules/.bin/craftsman', ['cache', '--debug'], {
+		execSync(`${join('node_modules', '.bin', 'craftsman')} cache --debug`, {
 			cwd: this.output, stdio: 'inherit'
 		})
 
@@ -383,7 +381,7 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public git(): Scaffold {
-		spawnSync('git', ['init',], {
+		execSync('git init', {
 			cwd: this.output, stdio: 'inherit'
 		});
 

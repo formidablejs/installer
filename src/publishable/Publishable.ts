@@ -1,5 +1,6 @@
 import { color } from '@oclif/color';
-import { spawnSync } from "child_process";
+import { execSync } from "child_process";
+import { join } from 'path';
 
 export class Publishable {
 	/**
@@ -31,7 +32,7 @@ export class Publishable {
 	publish(): void {
 		console.log(color.green('tagging') + ` ${this.package}:` + color.green(`${this.tags.join(',')}`));
 
-		spawnSync('./node_modules/.bin/craftsman', ['publish', '--package', this.package, '--tag', this.tags.join(','), '--force'], {
+		execSync(`${join(this.cwd, 'node_modules', '.bin', 'craftsman')} publish --package ${this.package} --tag ${this.tags.join(',')} --force`, {
 			cwd: this.cwd, stdio: 'inherit'
 		});
 	}
