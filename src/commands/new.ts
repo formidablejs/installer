@@ -163,8 +163,6 @@ export default class New extends Command {
 			.modify()
 			.generateKey()
 			.setPackageName()
-			.commentOutClientUrl()
-			.setSession()
 			.setDatabase()
 			.cache();
 

@@ -14,6 +14,8 @@ import { tmpdir } from 'os';
 import { updateLine } from './updateLine';
 import { VueHook } from '../hooks/VueHook';
 import { WebPublishable } from '../publishable/WebPublishable';
+import { ClientUrlModifier } from '../modifier/ClientUrlModifier';
+import { SessionModifier } from '../modifier/SessionModifier';
 import New from '../commands/new';
 const unzipper = require('unzipper');
 
@@ -106,7 +108,7 @@ export class Scaffold {
 								.on('error', (error: any) => {
 									this.command.error('Could not create Formidablejs application');
 
-									this.command.exit;
+									this.command.exit(1);
 								});
 						}
 					}
@@ -223,11 +225,16 @@ export class Scaffold {
 	public modify(): Scaffold {
 		if (this.command.onboarding.type === 'full-stack') {
 			PrettyErrorsModifier.make(this.output);
+			SessionModifier.make(this.output);
 
 			if (['react', 'vue'].includes(this.command.onboarding.stack ?? '')) {
 				InertiaResolverModifier.make(this.output);
 				InertiaConfigModifier.make(this.output);
 			}
+		}
+
+		if (this.command.onboarding.type === 'api') {
+			ClientUrlModifier.make(this.output);
 		}
 
 		return this;
@@ -261,52 +268,6 @@ export class Scaffold {
 		packageObject.name = this.appName.replace(new RegExp(' ', 'g'), '-');
 
 		writeFileSync(packageName, JSON.stringify(packageObject, null, 2));
-
-		return this;
-	}
-
-	/**
-	 * Comment out client url.
-	 *
-	 * @returns {Scaffold}
-	 */
-	public commentOutClientUrl(): Scaffold {
-		if (this.command.onboarding.type !== 'full-stack') return this;
-
-		updateLine(join(this.output, '.env'), (line: string) => {
-			if (line.trim() === 'CLIENT_URL=http://localhost:8000') {
-				line = '# CLIENT_URL=http://localhost:8000';
-			}
-
-			return line;
-		});
-
-		return this;
-	}
-
-	/**
-	 * Set session driver.
-	 *
-	 * @returns {Scaffold}
-	 */
-	public setSession(): Scaffold {
-		if (this.command.onboarding.type !== 'full-stack') return this;
-
-		updateLine(join(this.output, 'config', 'session.imba'), (line: string) => {
-			if (line.trim() == "driver: 'memory'") {
-				line = "  driver: 'file'";
-			}
-
-			return line;
-		});
-
-		updateLine(join(this.output, 'config', 'session.imba'), (line: string) => {
-			if (line.trim() == "same_site: helpers.env 'SESSION_SAME_SITE', 'none'") {
-				line = "	same_site: helpers.env 'SESSION_SAME_SITE', 'lax'";
-			}
-
-			return line;
-		});
 
 		return this;
 	}
