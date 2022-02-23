@@ -37,7 +37,7 @@ export default class New extends Command {
 		stack: Flags.string({ description: 'The default stack to use', options: ['imba', 'react', 'vue'] }),
 		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['blank', 'spa'] }),
 		database: Flags.string({ description: 'The default database driver to use', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
-		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn', 'pnpm'] }),
+		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
 	};
 
 	/**
