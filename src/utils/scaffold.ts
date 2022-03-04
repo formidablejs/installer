@@ -17,6 +17,7 @@ import { WebPublishable } from '../publishable/WebPublishable';
 import { ClientUrlModifier } from '../modifier/ClientUrlModifier';
 import { SessionModifier } from '../modifier/SessionModifier';
 import New from '../commands/new';
+import { AuthEmailModifier } from '../modifier/AuthEmailModifier';
 const unzipper = require('unzipper');
 
 export class Scaffold {
@@ -54,9 +55,12 @@ export class Scaffold {
 	 * @param {string} appName application name
 	 * @param {string} output Output directory
 	 * @param {New} command
+	 * @param {Boolean} dev
 	 * @returns {void}
 	 */
-	constructor(protected appName: string, protected output: string, protected command: New) {}
+	constructor(protected appName: string, protected output: string, protected command: New, dev: Boolean = false) {
+		if (dev) this.url = 'https://github.com/formidablejs/formidablejs/archive/refs/heads/dev.zip';
+	}
 
 	/**
 	 * Check if scaffold was successful.
@@ -241,6 +245,17 @@ export class Scaffold {
 	}
 
 	/**
+	 * Uncomment auth mailers.
+	 *
+	 * @returns {Scaffold}
+	 */
+	public enableAuthMailers(): Scaffold {
+		AuthEmailModifier.make(this.output);
+
+		return this;
+	}
+
+	/**
 	 * Generate encryption key.
 	 *
 	 * @returns {Scaffold}
@@ -248,7 +263,7 @@ export class Scaffold {
 	public generateKey(): Scaffold {
 		this.command.log(' ');
 
-		execSync(`${join('node_modules', '.bin', 'craftsman')} key`, {
+		execSync(`node craftsman key:generate`, {
 			cwd: this.output, stdio: 'inherit'
 		});
 
@@ -329,7 +344,7 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public cache(): Scaffold {
-		execSync(`${join('node_modules', '.bin', 'craftsman')} cache --debug`, {
+		execSync('node craftsman config:cache', {
 			cwd: this.output, stdio: 'inherit'
 		})
 
