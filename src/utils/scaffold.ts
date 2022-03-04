@@ -248,7 +248,7 @@ export class Scaffold {
 	public generateKey(): Scaffold {
 		this.command.log(' ');
 
-		execSync(`${join('node_modules', '.bin', 'craftsman')} key`, {
+		execSync(`node craftsman key:generate`, {
 			cwd: this.output, stdio: 'inherit'
 		});
 
@@ -329,7 +329,7 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public cache(): Scaffold {
-		execSync(`${join('node_modules', '.bin', 'craftsman')} cache --debug`, {
+		execSync('node craftsman config:cache', {
 			cwd: this.output, stdio: 'inherit'
 		})
 
