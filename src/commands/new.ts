@@ -38,6 +38,7 @@ export default class New extends Command {
 		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['blank', 'spa'] }),
 		database: Flags.string({ description: 'The default database driver to use', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
 		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
+		dev: Flags.boolean({ description: 'Use dev branch' }),
 	};
 
 	/**
@@ -98,7 +99,7 @@ export default class New extends Command {
 			args.name = basename(this.settings.application);
 		}
 
-		const scaffold = new Scaffold(args.name, this.settings.application, this);
+		const scaffold = new Scaffold(args.name, this.settings.application, this, flags.dev);
 
 		/** scaffold application. */
 		scaffold.make();
@@ -164,7 +165,8 @@ export default class New extends Command {
 			.generateKey()
 			.setPackageName()
 			.setDatabase()
-			.cache();
+			.cache()
+			.enableAuthMailers();
 
 		/** initialize git. */
 		if (flags.git) {

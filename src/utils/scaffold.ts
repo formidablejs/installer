@@ -17,6 +17,7 @@ import { WebPublishable } from '../publishable/WebPublishable';
 import { ClientUrlModifier } from '../modifier/ClientUrlModifier';
 import { SessionModifier } from '../modifier/SessionModifier';
 import New from '../commands/new';
+import { AuthEmailModifier } from '../modifier/AuthEmailModifier';
 const unzipper = require('unzipper');
 
 export class Scaffold {
@@ -54,9 +55,12 @@ export class Scaffold {
 	 * @param {string} appName application name
 	 * @param {string} output Output directory
 	 * @param {New} command
+	 * @param {Boolean} dev
 	 * @returns {void}
 	 */
-	constructor(protected appName: string, protected output: string, protected command: New) {}
+	constructor(protected appName: string, protected output: string, protected command: New, dev: Boolean = false) {
+		if (dev) this.url = 'https://github.com/formidablejs/formidablejs/archive/refs/heads/dev.zip';
+	}
 
 	/**
 	 * Check if scaffold was successful.
@@ -236,6 +240,17 @@ export class Scaffold {
 		if (this.command.onboarding.type === 'api') {
 			ClientUrlModifier.make(this.output);
 		}
+
+		return this;
+	}
+
+	/**
+	 * Uncomment auth mailers.
+	 *
+	 * @returns {Scaffold}
+	 */
+	public enableAuthMailers(): Scaffold {
+		AuthEmailModifier.make(this.output);
 
 		return this;
 	}
