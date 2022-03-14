@@ -1,4 +1,4 @@
-import { color } from '@oclif/color'
+import { dim } from '../utils/dim';
 import { Onboard } from "./Onboard";
 
 export class Database extends Onboard {
@@ -14,7 +14,7 @@ export class Database extends Onboard {
 	 *
 	 * @var {string}
 	 */
-	static description: String = 'Which database do you want to use?' + color.dim(' (You can change this later)');
+	static description: String = 'Which database do you want to use?' + dim(' (You can change this later)');
 
 	/**
 	 * The choices for the onboarding question.
@@ -27,7 +27,7 @@ export class Database extends Onboard {
 		{ name: 'SQLite', value: 'sqlite3' },
 		{ name: 'MSSQL', value: 'tedious' },
 		{ name: 'Oracle', value: 'oracledb' },
-		{ name: color.dim('I will set this later'), value: 'sqlite3' },
+		{ name: dim('I will set this later'), value: 'sqlite3' },
 	];
 
 	/**
