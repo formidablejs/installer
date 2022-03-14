@@ -8,6 +8,7 @@ import { Scaffold } from '../utils/scaffold';
 import { welcome } from '../utils/welcome';
 import { waitForState } from '../utils/waitForState';
 import { isDirEmpty } from '../utils/isDirEmpty';
+import { dim } from '../utils/dim';
 
 export default class New extends Command {
 	/**
@@ -114,14 +115,14 @@ export default class New extends Command {
 		if (!this.onboarding.type) {
 			({ type: this.onboarding.type } = await Type.make());
 		} else {
-			this.log(color.dim(`Creating ${this.onboarding.type === 'api' ? 'an API' : 'a full-stack'} application`));
+			this.log(dim(`Creating ${this.onboarding.type === 'api' ? 'an API' : 'a full-stack'} application`));
 		}
 
 		if (!this.onboarding.database) {
 			({ database: this.onboarding.database } = await Database.make());
 		} else {
 			if (this.onboarding.database !== 'skip') {
-				this.log(color.dim(`Using ${this.onboarding.database} as default database`));
+				this.log(dim(`Using ${this.onboarding.database} as default database`));
 			}
 		}
 
@@ -129,7 +130,7 @@ export default class New extends Command {
 			({ stack: this.onboarding.stack } = await Stack.make());
 		} else {
 			if (this.onboarding.type === 'full-stack') {
-				this.log(color.dim(`Using ${this.onboarding.stack} as default stack`));
+				this.log(dim(`Using ${this.onboarding.stack} as default stack`));
 			}
 		}
 
@@ -137,14 +138,14 @@ export default class New extends Command {
 			({ scaffolding: this.onboarding.scaffolding } = await Scaffolding.make());
 		} else {
 			if (this.onboarding.stack === 'imba' && this.onboarding.type === 'full-stack') {
-				this.log(color.dim(`Using ${this.onboarding.scaffolding} as default scaffolding`));
+				this.log(dim(`Using ${this.onboarding.scaffolding} as default scaffolding`));
 			}
 		}
 
 		if (!this.onboarding.manager) {
 			({ manager: this.onboarding.manager } = await Manager.make());
 		} else {
-			this.log(color.dim(`Using ${this.onboarding.manager} as the default package manager`));
+			this.log(dim(`Using ${this.onboarding.manager} as the default package manager`));
 		}
 		/** end the onboarding. */
 
@@ -177,14 +178,14 @@ export default class New extends Command {
 		this.log(color.green('👉 Get started with the following commands:\n'));
 
 		if (process.cwd() !== this.settings.application) {
-			this.log(color.dim(`$ cd ${args.name}`));
+			this.log(dim(`$ cd ${args.name}`));
 		}
 
 		if (this.onboarding.type === 'full-stack' && ['react', 'vue'].includes(this.onboarding.stack?.toLowerCase() ?? '')) {
-			this.log(color.dim(`$ ${this.onboarding.manager} install`));
-			this.log(color.dim(`$ ${this.onboarding.manager} run mix:dev`));
+			this.log(dim(`$ ${this.onboarding.manager} install`));
+			this.log(dim(`$ ${this.onboarding.manager} run mix:dev`));
 		}
 
-		this.log(color.dim(`$ ${this.onboarding.manager} start`));
+		this.log(dim(`$ ${this.onboarding.manager} start`));
 	}
 }
