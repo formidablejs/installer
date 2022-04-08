@@ -18,6 +18,7 @@ import { ClientUrlModifier } from '../modifier/ClientUrlModifier';
 import { SessionModifier } from '../modifier/SessionModifier';
 import New from '../commands/new';
 import { AuthEmailModifier } from '../modifier/AuthEmailModifier';
+import { getDefaultBranch } from './getDefaultBranch';
 const unzipper = require('unzipper');
 
 export class Scaffold {
@@ -40,14 +41,14 @@ export class Scaffold {
 	 *
 	 * @var {string} url
 	 */
-	protected url: string = 'https://github.com/formidablejs/formidablejs/archive/refs/heads/main.zip';
+	protected url: string = 'https://github.com/formidablejs/formidablejs/archive/refs/heads/{branch}.zip';
 
 	/**
 	 * Formidable skeleton destination.
 	 *
 	 * @var {string} skeleton
 	 */
-	protected skeleton: string = join(tmpdir(), 'formidablejs-master.zip');
+	protected skeleton: string = join(tmpdir(), 'formidablejs-skeleton.zip');
 
 	/**
 	 * Scaffold application.
@@ -85,10 +86,19 @@ export class Scaffold {
 	 *
 	 * @returns {void}
 	 */
-	public make() {
+	public async make() {
 		this.busy = true;
 
-		download(this.url, this.skeleton)
+		let url = this.url;
+
+		/** fetch default branch name if installer is not using the --dev flag. */
+		if (url.indexOf('{branch}') !== -1) {
+			const branch = await getDefaultBranch('main');
+
+			url = url.replace('{branch}', branch);
+		}
+
+		download(url, this.skeleton)
 			.then(async (response) => {
 				this.busy = false;
 

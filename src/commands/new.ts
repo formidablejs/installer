@@ -103,7 +103,7 @@ export default class New extends Command {
 		const scaffold = new Scaffold(args.name, this.settings.application, this, flags.dev);
 
 		/** scaffold application. */
-		scaffold.make();
+		await scaffold.make();
 
 		/** start the onboarding. */
 		if (flags.type) this.onboarding.type = flags.type;
