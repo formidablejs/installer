@@ -24,10 +24,10 @@ export class Database extends Onboard {
 	static choices: Array<String | Object> = [
 		{ name: 'MySQL / MariaDB', value: 'mysql' },
 		{ name: 'PostgreSQL / Amazon Redshift', value: 'pg' },
-		{ name: 'SQLite', value: 'sqlite3' },
+		{ name: 'SQLite', value: '@vscode/sqlite3' },
 		{ name: 'MSSQL', value: 'tedious' },
 		{ name: 'Oracle', value: 'oracledb' },
-		{ name: dim('I will set this later'), value: 'sqlite3' },
+		{ name: dim('I will set this later'), value: '@vscode/sqlite3' },
 	];
 
 	/**
@@ -45,7 +45,7 @@ export class Database extends Onboard {
 				return 'pg';
 
 			case 'sqlite':
-				return 'sqlite3';
+				return '@vscode/sqlite3';
 
 			case 'mssql':
 				return 'tedious';
@@ -54,7 +54,7 @@ export class Database extends Onboard {
 				return 'oracledb';
 
 			default:
-				return 'sqlite3'
+				return '@vscode/sqlite3'
 		}
 	}
 }
