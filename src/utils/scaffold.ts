@@ -332,6 +332,13 @@ export class Scaffold {
 		updateLine(join(this.output, '.env'), (line: string) => {
 			if (line.startsWith('DB_CONNECTION')) line = `DB_CONNECTION=${connection}`;
 
+			/** create sqlite file. */
+			if (connection === 'sqlite' && line.startsWith('DB_PASSWORD')) {
+				line = `${line}\nDATABASE_URL=database/db.sqlite`;
+
+				writeFileSync(join(this.output, 'database/db.sqlite'), '');
+			}
+
 			return line;
 		});
 
