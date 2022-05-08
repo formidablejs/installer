@@ -16,8 +16,8 @@ export class ClientUrlModifier extends Modifier {
 	 * @returns {string}
 	 */
 	run(line: string, index: number): string {
-		if (line.trim() === 'CLIENT_URL=http://localhost:8000') {
-			return '# CLIENT_URL=http://localhost:8000';
+		if (line.trim().startsWith('CLIENT_URL=')) {
+			return `# ${line.trim()}`;
 		}
 
 		return line;

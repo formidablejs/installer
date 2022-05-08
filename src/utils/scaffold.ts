@@ -1,6 +1,11 @@
+import { AuthEmailModifier } from '../modifier/AuthEmailModifier';
 import { AuthMailPublishable } from '../publishable/AuthMailPublishable';
+import { ClientUrlModifier } from '../modifier/ClientUrlModifier';
 import { copyFileSync, createWriteStream, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { Database } from '../onboard';
 import { download } from "./download";
+import { execSync } from 'child_process';
+import { getDefaultBranch } from './getDefaultBranch';
 import { InertiaConfigModifier } from '../modifier/InertiaConfigModifier';
 import { InertiaPublishable } from '../publishable/InertiaPublishable';
 import { InertiaResolverModifier } from '../modifier/InertiaResolverModifier';
@@ -8,17 +13,13 @@ import { join } from 'path';
 import { MailPublishable } from '../publishable/MailPublishable';
 import { PrettyErrorsModifier } from '../modifier/PrettyErrorsModifier';
 import { ReactHook } from '../hooks/ReactHook';
+import { SessionModifier } from '../modifier/SessionModifier';
 import { SPAPublishable } from '../publishable/SPAPublishable';
-import { execSync } from 'child_process';
 import { tmpdir } from 'os';
 import { updateLine } from './updateLine';
 import { VueHook } from '../hooks/VueHook';
 import { WebPublishable } from '../publishable/WebPublishable';
-import { ClientUrlModifier } from '../modifier/ClientUrlModifier';
-import { SessionModifier } from '../modifier/SessionModifier';
 import New from '../commands/new';
-import { AuthEmailModifier } from '../modifier/AuthEmailModifier';
-import { getDefaultBranch } from './getDefaultBranch';
 const unzipper = require('unzipper');
 
 export class Scaffold {
@@ -199,8 +200,8 @@ export class Scaffold {
 			}
 		}
 
-		if (this.command.onboarding.database && this.command.onboarding.database !== 'skip') {
-			deps.push(this.command.onboarding.database);
+		if (this.command.onboarding.database) {
+			deps.push(Database.resolveDependency(this.command.onboarding.database));
 		}
 
 		return deps;
@@ -303,8 +304,6 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public setDatabase(): Scaffold {
-		if (this.command.onboarding.database === 'skip') return this;
-
 		let connection: string = '';
 
 		switch (this.command.onboarding.database) {
@@ -316,7 +315,7 @@ export class Scaffold {
 				connection = 'pgsql';
 				break;
 
-			case '@vscode/sqlite3':
+			case 'sqlite3':
 				connection = 'sqlite';
 				break;
 
@@ -327,10 +326,26 @@ export class Scaffold {
 			case 'oracledb':
 				connection = 'oracle';
 				break;
+			
+			default:
+				connection = 'sqlite'
 		}
 
 		updateLine(join(this.output, '.env'), (line: string) => {
 			if (line.startsWith('DB_CONNECTION')) line = `DB_CONNECTION=${connection}`;
+
+			if (connection === 'sqlite') {
+				if (line.startsWith('DB_CONNECTION')) {
+					line = `${line}\nDATABASE_URL=database/db.sqlite`;
+				}
+
+				if (line.startsWith('DB_') && !line.startsWith('DB_CONNECTION')) {
+					line = `# ${line}`;
+				}
+				
+				/** create sqlite file. */
+				writeFileSync(join(this.output, 'database/db.sqlite'), '');
+			}
 
 			return line;
 		});
@@ -338,11 +353,21 @@ export class Scaffold {
 		if (connection === 'sqlite') {
 			updateLine(join(this.output, 'config', 'database.imba'), (line: string) => {
 				if (line.trim() == 'useNullAsDefault: null') {
-					line = '	useNullAsDefault: true';
+					line = "\tuseNullAsDefault: true";
 				}
 
 				return line;
 			});
+
+			if (this.command.onboarding.sqliteGitIgnore === true) {
+				updateLine(join(this.output, '.gitignore'), (line: string) => {
+					if (line.trim() === '/bootstrap/cache/config.json') {
+						line = `${line}\n/database/db.sqlite`;
+					}
+
+					return line;
+				});
+			}
 		}
 
 		return this;
@@ -367,7 +392,9 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public git(): Scaffold {
-		execSync('git init', {
+		this.command.log(' ');
+		
+		execSync('git init --initial-branch=main', {
 			cwd: this.output, stdio: 'inherit'
 		});
 

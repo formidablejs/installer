@@ -1,3 +1,5 @@
+import { IPrompt } from "../interface";
+
 var inquirer = require('inquirer');
 
 export class Onboard {
@@ -7,6 +9,13 @@ export class Onboard {
 	 * @var {string}
 	 */
 	static type: String;
+
+	/**
+	 * The question onboarding method.
+	 *
+	 * @var {string}
+	 */
+	static method: String = 'list';
 
 	/**
 	 * The description of the onboarding question.
@@ -28,11 +37,16 @@ export class Onboard {
 	 * @returns {Promise<void>}
 	 */
 	static async make() {
-		return await inquirer.prompt([{
+		const prompt: IPrompt = {
 			name: this.type,
+			type: this.method,
 			message: this.description,
-			type: 'list',
-			choices: this.choices,
-		}]);
+		};
+
+		if (this.method === 'list') {
+			prompt.choices = this.choices;
+		}
+
+		return await inquirer.prompt([prompt]);
 	}
 }
