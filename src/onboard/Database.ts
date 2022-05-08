@@ -27,7 +27,7 @@ export class Database extends Onboard {
 		{ name: 'SQLite', value: 'sqlite3' },
 		{ name: 'MSSQL', value: 'tedious' },
 		{ name: 'Oracle', value: 'oracledb' },
-		{ name: dim('I will set this later'), value: 'sqlite3' },
+		{ name: dim('I will set this later'), value: 'skip' },
 	];
 
 	/**
@@ -56,5 +56,19 @@ export class Database extends Onboard {
 			default:
 				return 'sqlite3'
 		}
+	}
+
+	/**
+	 * Get database dependency.
+	 *
+	 * @param {string} database
+	 * @returns {string}
+	 */
+	static resolveDependency(database: string): string {
+		if (database.toLowerCase() === 'skip') {
+			return 'sqlite3'
+		}
+
+		return database;
 	}
 }
