@@ -392,7 +392,9 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public git(): Scaffold {
-		execSync('git init', {
+		this.command.log(' ');
+		
+		execSync('git init --initial-branch=main', {
 			cwd: this.output, stdio: 'inherit'
 		});
 
