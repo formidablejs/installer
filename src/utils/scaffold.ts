@@ -316,7 +316,7 @@ export class Scaffold {
 				connection = 'pgsql';
 				break;
 
-			case '@vscode/sqlite3':
+			case 'sqlite3':
 				connection = 'sqlite';
 				break;
 
