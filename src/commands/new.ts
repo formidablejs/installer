@@ -1,6 +1,6 @@
 import { color } from '@oclif/color';
 import { Command, Flags } from '@oclif/core';
-import { Database, Manager, Scaffolding, Stack, Type } from '../onboard';
+import { Database, Manager, Scaffolding, SQLiteGitIgnore, Stack, Type } from '../onboard';
 import { existsSync } from 'fs';
 import { ISettings, IOnboarding } from '../interface';
 import { basename, join } from 'path';
@@ -33,11 +33,12 @@ export default class New extends Command {
 	 * @var {object}
 	 */
 	static flags = {
-		git: Flags.boolean({ description: 'Initialize a Git repository' }),
+		git: Flags.boolean({ description: 'Initialize a Git repository', char: 'g' }),
 		type: Flags.string({ description: 'The type of application to create', options: ['api', 'full-stack'] }),
 		stack: Flags.string({ description: 'The default stack to use', options: ['imba', 'react', 'vue'] }),
 		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['blank', 'spa'] }),
 		database: Flags.string({ description: 'The default database driver to use', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
+		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
 		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
 		dev: Flags.boolean({ description: 'Use dev branch' }),
 	};
@@ -74,6 +75,7 @@ export default class New extends Command {
 		stack: null,
 		scaffolding: null,
 		database: null,
+		sqliteGitIgnore: null,
 		manager: null,
 	};
 
@@ -110,6 +112,7 @@ export default class New extends Command {
 		if (flags.stack) this.onboarding.stack = flags.stack;
 		if (flags.scaffolding) this.onboarding.scaffolding = flags.scaffolding;
 		if (flags.database) this.onboarding.database = Database.getDriver(flags.database);
+		if (flags['sqlite-git-ignore']) this.onboarding.sqliteGitIgnore = flags['sqlite-git-ignore'];
 		if (flags.manager) this.onboarding.manager = flags.manager;
 
 		if (!this.onboarding.type) {
@@ -124,6 +127,12 @@ export default class New extends Command {
 			if (this.onboarding.database !== 'skip') {
 				this.log(dim(`Using ${this.onboarding.database} as default database`));
 			}
+		}
+
+		if (!this.onboarding.sqliteGitIgnore && this.onboarding.database?.toLocaleLowerCase() === 'sqlite3') {
+			({ sqliteGitIgnore: this.onboarding.sqliteGitIgnore } = await SQLiteGitIgnore.make());
+		} else {
+			this.onboarding.sqliteGitIgnore = true;
 		}
 
 		if (!this.onboarding.stack && this.onboarding.type === 'full-stack') {
