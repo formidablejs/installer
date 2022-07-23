@@ -52,6 +52,13 @@ export class Scaffold {
 	protected skeleton: string = join(tmpdir(), 'formidablejs-skeleton.zip');
 
 	/**
+	 * Use TypeScript.
+	 *
+	 * @var {Boolean} ts
+	 */
+	protected ts: Boolean = false;
+
+	/**
 	 * Scaffold application.
 	 *
 	 * @param {string} appName application name
@@ -60,8 +67,16 @@ export class Scaffold {
 	 * @param {Boolean} dev
 	 * @returns {void}
 	 */
-	constructor(protected appName: string, protected output: string, protected command: New, dev: Boolean = false) {
-		if (dev) this.url = 'https://github.com/formidablejs/formidablejs/archive/refs/heads/dev.zip';
+	constructor(protected appName: string, protected output: string, protected command: New, dev: Boolean = false, ts: Boolean = false) {
+		if (ts) {
+			this.url = 'https://github.com/formidablejs/formidablejs-typescript/archive/refs/heads/{branch}.zip';
+		}
+
+		if (dev) {
+			this.url = `https://github.com/formidablejs/${ts ? 'formidablejs-typescript' : 'formidablejs'}/archive/refs/heads/dev.zip`;
+		}
+
+		this.ts = ts;
 	}
 
 	/**
@@ -94,7 +109,7 @@ export class Scaffold {
 
 		/** fetch default branch name if installer is not using the --dev flag. */
 		if (url.indexOf('{branch}') !== -1) {
-			const branch = await getDefaultBranch('main');
+			const branch = await getDefaultBranch('main', this.ts);
 
 			url = url.replace('{branch}', branch);
 		}
@@ -239,17 +254,17 @@ export class Scaffold {
 	 */
 	public modify(): Scaffold {
 		if (this.command.onboarding.type === 'full-stack') {
-			PrettyErrorsModifier.make(this.output);
-			SessionModifier.make(this.output);
+			PrettyErrorsModifier.make(this.output, this.ts);
+			SessionModifier.make(this.output, this.ts);
 
 			if (['react', 'vue'].includes(this.command.onboarding.stack ?? '')) {
-				InertiaResolverModifier.make(this.output);
-				InertiaConfigModifier.make(this.output);
+				InertiaResolverModifier.make(this.output, this.ts);
+				InertiaConfigModifier.make(this.output, this.ts);
 			}
 		}
 
 		if (this.command.onboarding.type === 'api') {
-			ClientUrlModifier.make(this.output);
+			ClientUrlModifier.make(this.output, this.ts);
 		}
 
 		return this;
@@ -261,7 +276,7 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public enableAuthMailers(): Scaffold {
-		AuthEmailModifier.make(this.output);
+		AuthEmailModifier.make(this.output, this.ts);
 
 		return this;
 	}
@@ -326,7 +341,7 @@ export class Scaffold {
 			case 'oracledb':
 				connection = 'oracle';
 				break;
-			
+
 			default:
 				connection = 'sqlite'
 		}
@@ -342,7 +357,7 @@ export class Scaffold {
 				if (line.startsWith('DB_') && !line.startsWith('DB_CONNECTION')) {
 					line = `# ${line}`;
 				}
-				
+
 				/** create sqlite file. */
 				writeFileSync(join(this.output, 'database/db.sqlite'), '');
 			}
@@ -351,9 +366,9 @@ export class Scaffold {
 		});
 
 		if (connection === 'sqlite') {
-			updateLine(join(this.output, 'config', 'database.imba'), (line: string) => {
-				if (line.trim() == 'useNullAsDefault: null') {
-					line = "\tuseNullAsDefault: true";
+			updateLine(join(this.output, 'config', `database.${this.ts ? 'ts' : 'imba'}`), (line: string) => {
+				if (line.trim() == `useNullAsDefault: null${this.ts ? ',' : ''}`) {
+					line = `\tuseNullAsDefault: true${this.ts ? ',' : ''}`;
 				}
 
 				return line;
@@ -393,7 +408,7 @@ export class Scaffold {
 	 */
 	public git(): Scaffold {
 		this.command.log(' ');
-		
+
 		execSync('git init --initial-branch=main', {
 			cwd: this.output, stdio: 'inherit'
 		});

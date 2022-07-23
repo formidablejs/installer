@@ -10,6 +10,13 @@ export class InertiaConfigModifier extends Modifier {
 	protected file: string = join('config', 'index.imba');
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public getFile(): string {
+		return join('config', `index.${this.ts ? 'ts' : 'imba'}`);
+	}
+
+	/**
 	 * Modifier callback
 	 *
 	 * @param {string} line
@@ -18,11 +25,11 @@ export class InertiaConfigModifier extends Modifier {
 	 */
 	run(line: string, index: number): string {
 		if (line.trim().startsWith('import hashing')) {
-			return `${line}\nimport inertia from './inertia'`
+			return `${line}\nimport inertia from './inertia'${this.ts ? ';' : ''}`;
 		}
 
-		if (line.trim() == 'hashing') {
-			return `${line}\n			inertia`
+		if (line.trim() == `hashing${this.ts ? ',' : ''}`) {
+			return `${line}\n			inertia${this.ts ? ',' : ''}`;
 		}
 
 		return line;

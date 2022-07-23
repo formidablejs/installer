@@ -11,13 +11,22 @@ export class Modifier {
 	protected file: string = '';
 
 	/**
+	 * Get file.
+	 *
+	 * @returns {string}
+	 */
+	public getFile(): string {
+		return this.file;
+	}
+
+	/**
 	 * Get file path
 	 */
 	public get filePath(): string {
-		return join(this.cwd, this.file);
+		return join(this.cwd, this.getFile());
 	}
 
-	constructor(public cwd: string) { }
+	constructor(public cwd: string, public ts: Boolean = false) { }
 
 	/**
 	 * Modifier callback
@@ -36,8 +45,8 @@ export class Modifier {
 	 * @param {string} cwd
 	 * @returns {void}
 	 */
-	static make(cwd: string): void {
-		const modifier = (new this(cwd));
+	static make(cwd: string, ts: Boolean = false): void {
+		const modifier = (new this(cwd, ts));
 
 		updateLine(modifier.filePath, (line: string, index: number) => modifier.run(line, index));
 	}

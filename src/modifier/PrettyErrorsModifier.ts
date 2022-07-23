@@ -10,6 +10,13 @@ export class PrettyErrorsModifier extends Modifier {
 	protected file: string = join('config', 'app.imba');
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public getFile(): string {
+		return join('config', `app.${this.ts ? 'ts' : 'imba'}`);
+	}
+
+	/**
 	 * Modifier callback
 	 *
 	 * @param {string} line
@@ -18,11 +25,11 @@ export class PrettyErrorsModifier extends Modifier {
 	 */
 	run(line: string, index: number): string {
 		if (line.trim().startsWith('import { ValidationServiceResolver }')) {
-			return `${line}\nimport { PrettyErrorsServiceResolver } from '@formidablejs/pretty-errors'`;
+			return `${line}\nimport { PrettyErrorsServiceResolver } from '@formidablejs/pretty-errors'${this.ts ? ';' : ''}`;
 		}
 
-		if (line.trim() === 'MaintenanceServiceResolver') {
-			return `${line}\n		PrettyErrorsServiceResolver`
+		if (line.trim() === `MaintenanceServiceResolver${this.ts ? ',' : ''}`) {
+			return `${line}\n		PrettyErrorsServiceResolver${this.ts ? ',' : ''}`;
 		}
 
 		return line;
