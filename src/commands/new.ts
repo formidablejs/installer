@@ -41,6 +41,7 @@ export default class New extends Command {
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
 		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
 		dev: Flags.boolean({ description: 'Use dev branch' }),
+		ts: Flags.boolean({ description: 'Use TypeScript' }),
 	};
 
 	/**
@@ -102,7 +103,7 @@ export default class New extends Command {
 			args.name = basename(this.settings.application);
 		}
 
-		const scaffold = new Scaffold(args.name, this.settings.application, this, flags.dev);
+		const scaffold = new Scaffold(args.name, this.settings.application, this, flags.dev, flags.ts);
 
 		/** scaffold application. */
 		await scaffold.make();
