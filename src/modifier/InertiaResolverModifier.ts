@@ -10,6 +10,13 @@ export class InertiaResolverModifier extends Modifier {
 	protected file: string = join('config', 'app.imba');
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public getFile(): string {
+		return join('config', `app.${this.ts ? 'ts' : 'imba'}`);
+	}
+
+	/**
 	 * Modifier callback
 	 *
 	 * @param {string} line
@@ -18,11 +25,11 @@ export class InertiaResolverModifier extends Modifier {
 	 */
 	run(line: string, index: number): string {
 		if (line.trim().startsWith('import { ValidationServiceResolver }')) {
-			return `${line}\nimport { InertiaServiceResolver } from '@formidablejs/inertia'`
+			return `${line}\nimport { InertiaServiceResolver } from '@formidablejs/inertia'${this.ts ? ';' : ''}`;
 		}
 
-		if (line.trim() == 'MaintenanceServiceResolver') {
-			return `${line}\n		InertiaServiceResolver`
+		if (line.trim() == `MaintenanceServiceResolver${this.ts ? ',' : ''}`) {
+			return `${line}\n		InertiaServiceResolver${this.ts ? ',' : ''}`;
 		}
 
 		return line;

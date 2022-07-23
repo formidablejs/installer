@@ -10,6 +10,13 @@ export class SessionModifier extends Modifier {
 	protected file: string = join('config', 'session.imba');
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public getFile(): string {
+		return join('config', `session.${this.ts ? 'ts' : 'imba'}`);
+	}
+
+	/**
 	 * Modifier callback
 	 *
 	 * @param {string} line
@@ -17,7 +24,11 @@ export class SessionModifier extends Modifier {
 	 * @returns {string}
 	 */
 	run(line: string, index: number): string {
-		if (line.trim() == "same_site: helpers.env 'SESSION_SAME_SITE', 'none'") {
+		if (this.ts && line.trim() == "same_site: helpers.env('SESSION_SAME_SITE', 'none'),") {
+			return "	same_site: helpers.env('SESSION_SAME_SITE', 'lax'),";
+		}
+
+		if (this.ts == false && line.trim() == "same_site: helpers.env 'SESSION_SAME_SITE', 'none'") {
 			return "	same_site: helpers.env 'SESSION_SAME_SITE', 'lax'";
 		}
 

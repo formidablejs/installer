@@ -10,6 +10,13 @@ export class AuthEmailModifier extends Modifier {
 	protected file: string = join('app', 'Resolvers', 'AppServiceResolver.imba');
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public getFile(): string {
+		return join('app', 'Resolvers', `AppServiceResolver.${this.ts ? 'ts' : 'imba'}`);
+	}
+
+	/**
 	 * Modifier callback
 	 *
 	 * @param {string} line
@@ -17,6 +24,6 @@ export class AuthEmailModifier extends Modifier {
 	 * @returns {string}
 	 */
 	run(line: string, index: number): string {
-		return line.replace(/\#\s/g, '');;
+		return this.ts ? line.replace(/\/\/\s/g, '') : line.replace(/\#\s/g, '');
 	}
 }
