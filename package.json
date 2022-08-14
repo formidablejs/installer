@@ -20,6 +20,7 @@
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1",
+    "@oclif/plugin-warn-if-update-available": "^2.0.4",
     "axios": "^0.25.0",
     "figlet": "^1.5.2",
     "fs-extra": "^10.0.0",
@@ -51,8 +52,13 @@
     "dirname": "formidable",
     "commands": "./dist/commands",
     "plugins": [
-      "@oclif/plugin-help"
-    ]
+      "@oclif/plugin-help",
+      "@oclif/plugin-warn-if-update-available"
+    ],
+    "warn-if-update-available": {
+      "timeoutInDays": 1,
+      "message": "<%= config.name %> update available from <%= chalk.greenBright(config.version) %> to <%= chalk.greenBright(latest) %>."
+    }
   },
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
