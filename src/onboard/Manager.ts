@@ -20,5 +20,5 @@ export class Manager extends Onboard {
 	 *
 	 * @var {string[]}
 	 */
-	static choices: Array<String | Object> = ['npm', 'yarn'];
+	static choices: Array<String | Object> = ['npm', 'yarn', 'pnpm'];
 }

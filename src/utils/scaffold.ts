@@ -164,7 +164,7 @@ export class Scaffold {
 
 		/** install dependencies. */
 		execSync(
-			`${this.command.onboarding.manager ?? 'npm'} ${deps.length > 0 && this.command.onboarding.manager === 'yarn' ? 'add' : 'install'} ${deps.join(' ')} --legacy-peer-deps`,
+			`${this.command.onboarding.manager ?? 'npm'} ${deps.length > 0 && this.command.onboarding.manager === 'yarn' ? 'add' : 'install'} ${deps.join(' ')} ${this.command.onboarding.manager == 'pnpm' ? '' : '--legacy-peer-deps'}`,
 			{ cwd: this.output, stdio: 'inherit' }
 		);
 
@@ -289,9 +289,11 @@ export class Scaffold {
 	public generateKey(): Scaffold {
 		this.command.log(' ');
 
-		execSync(`node craftsman key:generate`, {
-			cwd: this.output, stdio: 'inherit'
-		});
+		const generate = execSync(`node craftsman key:generate`, {
+			cwd: this.output,
+		}).toString();
+
+		this.command.log(generate.replace(/\r?\n|\r/g, ''));
 
 		return this;
 	}
@@ -402,13 +404,22 @@ export class Scaffold {
 	}
 
 	/**
-	 * Initialize git..
+	 * Add .npmrc file.
+	 *
+	 * @returns {Scaffold}
+	 */
+	 public npmrc(): Scaffold {
+		writeFileSync(join(this.output, '.npmrc'), "auto-install-peers=true\nstrict-peer-dependencies=false\n");
+
+		return this;
+	}
+
+	/**
+	 * Initialize git.
 	 *
 	 * @returns {Scaffold}
 	 */
 	public git(): Scaffold {
-		this.command.log(' ');
-
 		execSync('git init --initial-branch=main', {
 			cwd: this.output, stdio: 'inherit'
 		});
