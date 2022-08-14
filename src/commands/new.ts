@@ -39,7 +39,7 @@ export default class New extends Command {
 		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['blank', 'spa'] }),
 		database: Flags.string({ description: 'The default database driver to use', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
-		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
+		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn', 'pnpm'] }),
 		dev: Flags.boolean({ description: 'Use dev branch' }),
 		ts: Flags.boolean({ description: 'Use TypeScript' }),
 	};
@@ -179,6 +179,11 @@ export default class New extends Command {
 			.cache()
 			.enableAuthMailers();
 
+		/** add npmrc file. */
+		if (this.onboarding.manager == 'pnpm') {
+			scaffold.npmrc();
+		}
+
 		/** initialize git. */
 		if (flags.git) {
 			scaffold.git();
@@ -192,8 +197,13 @@ export default class New extends Command {
 		}
 
 		if (this.onboarding.type === 'full-stack' && ['react', 'vue'].includes(this.onboarding.stack?.toLowerCase() ?? '')) {
-			this.log(dim(`$ ${this.onboarding.manager} install`));
-			this.log(dim(`$ ${this.onboarding.manager} run mix:dev`));
+			if (this.onboarding.manager == 'pnpm') {
+				this.log(dim(`$ ${this.onboarding.manager} install webpack --save-dev`));
+			} else {
+				this.log(dim(`$ ${this.onboarding.manager} ${this.onboarding.manager != 'yarn' ? 'install' : ''}`));
+			}
+
+			this.log(dim(`$ ${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
 		}
 
 		this.log(dim(`$ ${this.onboarding.manager} start`));
