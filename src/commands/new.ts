@@ -176,6 +176,7 @@ export default class New extends Command {
 			.generateKey()
 			.setPackageName()
 			.setDatabase()
+			.apiUpdates()
 			.cache()
 			.enableAuthMailers();
 
