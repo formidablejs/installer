@@ -357,7 +357,7 @@ export class Scaffold {
 				}
 
 				if (line.startsWith('DB_') && !line.startsWith('DB_CONNECTION')) {
-					line = `# ${line}`;
+					line = `${this.ts ? '//' : '#'} ${line}`;
 				}
 
 				/** create sqlite file. */
@@ -386,6 +386,33 @@ export class Scaffold {
 				});
 			}
 		}
+
+		return this;
+	}
+
+	/**
+	 * Update configs for api applications.
+	 *
+	 * @returns {Scaffold}
+	 */
+	public apiUpdates(): Scaffold {
+		if (this.command.onboarding.type != 'api') {
+			return this;
+		}
+
+		updateLine(join(this.output, 'config', `app.${this.ts ? 'ts' : 'imba'}`), (line: string) => {
+			if ([
+				`CookieServiceResolver${this.ts ? ',' : ''}`,
+				`SessionMemoryStoreServiceResolver${this.ts ? ',' : ''}`,
+				`SessionFileStoreServiceResolver${this.ts ? ',' : ''}`,
+				`SessionServiceResolver${this.ts ? ',' : ''}`,
+				`CsrfServiceResolver${this.ts ? ',' : ''}`
+			].includes(line.trim())) {
+				line = `		${this.ts ? '//' : '#'} ${line.trim()}`;
+			}
+
+			return line;
+		});
 
 		return this;
 	}
