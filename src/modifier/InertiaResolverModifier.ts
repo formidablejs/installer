@@ -25,7 +25,7 @@ export class InertiaResolverModifier extends Modifier {
 	 */
 	run(line: string, index: number): string {
 		if (line.trim().startsWith('import { ValidationServiceResolver }')) {
-			return `${line}\nimport { InertiaServiceResolver } from '@formidablejs/inertia'${this.ts ? ';' : ''}`;
+			return `${line}\nimport { InertiaServiceResolver } from '@formidablejs/inertia'`;
 		}
 
 		if (line.trim() == `MaintenanceServiceResolver${this.ts ? ',' : ''}`) {
