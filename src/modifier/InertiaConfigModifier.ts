@@ -25,7 +25,7 @@ export class InertiaConfigModifier extends Modifier {
 	 */
 	run(line: string, index: number): string {
 		if (line.trim().startsWith('import hashing')) {
-			return `${line}\nimport inertia from './inertia'${this.ts ? ';' : ''}`;
+			return `${line}\nimport inertia from './inertia'`;
 		}
 
 		if (line.trim() == `hashing${this.ts ? ',' : ''}`) {

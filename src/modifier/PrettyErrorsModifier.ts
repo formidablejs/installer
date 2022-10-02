@@ -25,7 +25,7 @@ export class PrettyErrorsModifier extends Modifier {
 	 */
 	run(line: string, index: number): string {
 		if (line.trim().startsWith('import { ValidationServiceResolver }')) {
-			return `${line}\nimport { PrettyErrorsServiceResolver } from '@formidablejs/pretty-errors'${this.ts ? ';' : ''}`;
+			return `${line}\nimport { PrettyErrorsServiceResolver } from '@formidablejs/pretty-errors'`;
 		}
 
 		if (line.trim() === `MaintenanceServiceResolver${this.ts ? ',' : ''}`) {
