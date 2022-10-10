@@ -357,7 +357,7 @@ export class Scaffold {
 				}
 
 				if (line.startsWith('DB_') && !line.startsWith('DB_CONNECTION')) {
-					line = `${this.ts ? '//' : '#'} ${line}`;
+					line = `# ${line}`;
 				}
 
 				/** create sqlite file. */
