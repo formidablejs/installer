@@ -1,6 +1,6 @@
 {
   "name": "@formidablejs/installer",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "The Formidable application installer",
   "author": "Donald Pakkies",
   "bin": {
