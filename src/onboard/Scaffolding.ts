@@ -6,24 +6,24 @@ export class Scaffolding extends Onboard {
 	 *
 	 * @var {string}
 	 */
-	static type: String = 'scaffolding';
+	static type: string = 'scaffolding';
 
 	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
 	 */
-	static description: String = 'What\'s your preferred scaffolding?';
+	static description: string = 'What\'s your preferred scaffolding?';
 
 	/**
 	 * The choices for the onboarding question.
 	 *
 	 * @var {string[]|Object[]}
 	 */
-	static choices: Array<String | Object> = [
+	static choices: Array<string | object> = [
 		{
-			name: 'Blank Canvas',
-			value: 'blank',
+			name: 'Multi-page Application',
+			value: 'mpa',
 		},
 		{
 			name: 'Single-page Application',

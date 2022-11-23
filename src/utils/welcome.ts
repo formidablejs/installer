@@ -1,4 +1,5 @@
 import { color } from '@oclif/color';
+const gradient = require('gradient-string');
 var figlet = require('figlet');
 
 /**
@@ -8,8 +9,6 @@ var figlet = require('figlet');
  * @returns {void}
  */
 export const welcome = (message: string) => {
-	console.log(color.blueBright(
-		figlet.textSync(message) + '\n' +
-		' The one person framework ✌️ \n'
-	));
+	console.log(gradient('cyan', 'magenta').multiline(figlet.textSync(message)))
+	console.log(color.blueBright(' The one person framework ✌️ \n'));
 }

@@ -9,6 +9,7 @@ import { welcome } from '../utils/welcome';
 import { waitForState } from '../utils/waitForState';
 import { isDirEmpty } from '../utils/isDirEmpty';
 import { dim } from '../utils/dim';
+import { Language } from '../onboard/Language';
 
 export default class New extends Command {
 	/**
@@ -36,12 +37,13 @@ export default class New extends Command {
 		git: Flags.boolean({ description: 'Initialize a Git repository', char: 'g' }),
 		type: Flags.string({ description: 'The type of application to create', options: ['api', 'full-stack'] }),
 		stack: Flags.string({ description: 'The default stack to use', options: ['imba', 'react', 'vue'] }),
-		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['blank', 'spa'] }),
+		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['mpa', 'spa'] }),
 		database: Flags.string({ description: 'The default database driver to use', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
-		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn', 'pnpm'] }),
+		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
+		language: Flags.string({ description: 'The default language to use', options: ['imba', 'typescript'] }),
 		dev: Flags.boolean({ description: 'Use dev branch' }),
-		ts: Flags.boolean({ description: 'Use TypeScript' }),
+		// ts: Flags.boolean({ description: 'Use TypeScript' }),
 	};
 
 	/**
@@ -78,10 +80,12 @@ export default class New extends Command {
 		database: null,
 		sqliteGitIgnore: null,
 		manager: null,
+		language: null
 	};
 
 	/**
 	 * Execute command
+	 *
 	 * @returns {Promise<void>}
 	 */
 	public async run(): Promise<void> {
@@ -89,21 +93,25 @@ export default class New extends Command {
 
 		welcome('Formidable');
 
-		if (/[^a-z0-9-_]/gi.test(args.name) && args.name !== '.') {
+		if (/[^a-z0-9-_]/gi.test(args.name) && !['.', './'].includes(args.name)) {
 			return this.error(`${color.red('Invalid Application name.')}`);
 		}
 
-		this.settings.application = join(process.cwd(), args.name !== '.' ? args.name : '');
+		this.settings.application = join(process.cwd(), !['.', './'].includes(args.name) ? args.name : '');
 
-		if ((existsSync(this.settings.application) && args.name !== '.') || args.name === '.' && !isDirEmpty(this.settings.application)) {
+		if ((existsSync(this.settings.application) && !['.', './'].includes(args.name)) || ['.', './'].includes(args.name) && !isDirEmpty(this.settings.application)) {
 			return this.error(color.red('Application already exists!'));
 		}
 
-		if (args.name === '.') {
+		if (['.', './'].includes(args.name)) {
 			args.name = basename(this.settings.application);
 		}
 
-		const scaffold = new Scaffold(args.name, this.settings.application, this, flags.dev, flags.ts);
+		if (!this.onboarding.language) {
+			({ language: this.onboarding.language } = await Language.make());
+		}
+
+		const scaffold = new Scaffold(args.name, this.settings.application, this, flags.dev, this.onboarding.language === 'typescript');
 
 		/** scaffold application. */
 		await scaffold.make();
@@ -119,14 +127,30 @@ export default class New extends Command {
 		if (!this.onboarding.type) {
 			({ type: this.onboarding.type } = await Type.make());
 		} else {
-			this.log(dim(`Creating ${this.onboarding.type === 'api' ? 'an API' : 'a full-stack'} application`));
+			this.log(color.green('! ') + dim(`Creating ${this.onboarding.type === 'api' ? 'an API' : 'a full-stack'} ${this.onboarding.language === 'imba' ? 'Imba' : 'TypeScript'} application`));
+		}
+
+		if (!this.onboarding.stack && this.onboarding.type === 'full-stack') {
+			({ stack: this.onboarding.stack } = await Stack.make());
+		} else {
+			if (this.onboarding.type === 'full-stack') {
+				this.log(color.green('! ') + dim(`Using ${this.onboarding.stack} as default stack`));
+			}
+		}
+
+		if (!this.onboarding.scaffolding && this.onboarding.stack === 'imba' && this.onboarding.type === 'full-stack') {
+			({ scaffolding: this.onboarding.scaffolding } = await Scaffolding.make());
+		} else {
+			if (this.onboarding.stack === 'imba' && this.onboarding.type === 'full-stack') {
+				this.log(color.green('! ') + dim(`Using ${this.onboarding.scaffolding} as default scaffolding`));
+			}
 		}
 
 		if (!this.onboarding.database) {
 			({ database: this.onboarding.database } = await Database.make());
 		} else {
 			if (this.onboarding.database !== 'skip') {
-				this.log(dim(`Using ${this.onboarding.database} as default database`));
+				this.log(color.green('! ') + dim(`Using ${this.onboarding.database} as default database`));
 			}
 		}
 
@@ -136,26 +160,10 @@ export default class New extends Command {
 			this.onboarding.sqliteGitIgnore = true;
 		}
 
-		if (!this.onboarding.stack && this.onboarding.type === 'full-stack') {
-			({ stack: this.onboarding.stack } = await Stack.make());
-		} else {
-			if (this.onboarding.type === 'full-stack') {
-				this.log(dim(`Using ${this.onboarding.stack} as default stack`));
-			}
-		}
-
-		if (!this.onboarding.scaffolding && this.onboarding.stack === 'imba' && this.onboarding.type === 'full-stack') {
-			({ scaffolding: this.onboarding.scaffolding } = await Scaffolding.make());
-		} else {
-			if (this.onboarding.stack === 'imba' && this.onboarding.type === 'full-stack') {
-				this.log(dim(`Using ${this.onboarding.scaffolding} as default scaffolding`));
-			}
-		}
-
 		if (!this.onboarding.manager) {
 			({ manager: this.onboarding.manager } = await Manager.make());
 		} else {
-			this.log(dim(`Using ${this.onboarding.manager} as the default package manager`));
+			this.log(color.green('! ') + dim(`Using ${this.onboarding.manager} as the default package manager`));
 		}
 		/** end the onboarding. */
 
@@ -190,23 +198,25 @@ export default class New extends Command {
 			scaffold.git();
 		}
 
-		this.log(color.green('\n✅ Your application is ready!'));
-		this.log(color.green('👉 Get started with the following commands:\n'));
+		const space = '   ';
+
+		this.log(color.green(`${flags.git ? '\n' : ''}Your application is ready! 🎉\n`));
+		this.log(color.cyan('Get started with the following commands:'));
 
 		if (process.cwd() !== this.settings.application) {
-			this.log(dim(`$ cd ${args.name}`));
+			this.log(dim(`${space}cd ${args.name}`));
 		}
 
 		if (this.onboarding.type === 'full-stack' && ['react', 'vue'].includes(this.onboarding.stack?.toLowerCase() ?? '')) {
 			if (this.onboarding.manager == 'pnpm') {
-				this.log(dim(`$ ${this.onboarding.manager} install webpack --save-dev`));
+				this.log(dim(`${space}${this.onboarding.manager} install webpack --save-dev`));
 			} else {
-				this.log(dim(`$ ${this.onboarding.manager} ${this.onboarding.manager != 'yarn' ? 'install' : ''}`));
+				this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'yarn' ? 'install' : ''}`));
 			}
 
-			this.log(dim(`$ ${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
+			this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
 		}
 
-		this.log(dim(`$ ${this.onboarding.manager} start`));
+		this.log(dim(`${space}${this.onboarding.manager} start${this.onboarding.manager == 'npm' ? ' --':''} --dev`));
 	}
 }

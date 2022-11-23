@@ -5,4 +5,5 @@ export interface IOnboarding {
 	database: string | null
 	sqliteGitIgnore: boolean | null
 	manager: string | null
+	language: 'imba' | 'typescript' | null
 }

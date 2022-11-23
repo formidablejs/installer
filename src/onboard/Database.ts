@@ -7,21 +7,21 @@ export class Database extends Onboard {
 	 *
 	 * @var {string}
 	 */
-	static type: String = 'database';
+	static type: string = 'database';
 
 	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
 	 */
-	static description: String = 'Which database do you want to use?' + dim(' (You can change this later)');
+	static description: string = 'Which database do you want to use?' + dim(' (You can change this later)');
 
 	/**
 	 * The choices for the onboarding question.
 	 *
 	 * @var {string[]|Object[]}
 	 */
-	static choices: Array<String | Object> = [
+	static choices: Array<string | object> = [
 		{ name: 'MySQL / MariaDB', value: 'mysql' },
 		{ name: 'PostgreSQL / Amazon Redshift', value: 'pg' },
 		{ name: 'SQLite', value: 'sqlite3' },

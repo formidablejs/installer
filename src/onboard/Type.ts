@@ -6,21 +6,21 @@ export class Type extends Onboard {
 	 *
 	 * @var {string}
 	 */
-	static type: String = 'type';
+	static type: string = 'type';
 
 	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
 	 */
-	static description: String = 'What type of application do you want to create?';
+	static description: string = 'What type of application do you want to create?';
 
 	/**
 	 * The choices for the onboarding question.
 	 *
-	 * @var {string[]|Object[]}
+	 * @var {string[]|object[]}
 	 */
-	static choices: Array<String | Object> = [
+	static choices: Array<string | object> = [
 		{
 			name: 'API Application',
 			value: 'api',
