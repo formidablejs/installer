@@ -30,7 +30,7 @@ export class Publishable {
 	 * @returns {void}
 	 */
 	publish(): void {
-		console.log(color.green('tagging') + ` ${this.package}:` + color.green(`${this.tags.join(',')}`));
+		console.log(color.green('Tagging') + ` ${this.package}:` + color.green(`${this.tags.join(',')}`));
 
 		execSync(`node craftsman package:publish --package=${this.package} --tag=${this.tags.join(',')} --force`, {
 			cwd: this.cwd, stdio: 'inherit'

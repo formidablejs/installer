@@ -7,19 +7,19 @@ export class SQLiteGitIgnore extends Onboard {
 	 *
 	 * @var {string}
 	 */
-	static type: String = 'sqliteGitIgnore';
+	static type: string = 'sqliteGitIgnore';
 
 	/**
 	 * The question onboarding method.
 	 *
 	 * @var {string}
 	 */
-	static method: String = 'confirm';
+	static method: string = 'confirm';
 
 	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
 	 */
-	static description: String = 'Do you want Git to ignore your SQLite database?' + dim(' (You can change this later)');
+	static description: string = 'Do you want Git to ignore your SQLite database?' + dim(' (You can change this later)');
 }

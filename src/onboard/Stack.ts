@@ -6,14 +6,14 @@ export class Stack extends Onboard {
 	 *
 	 * @var {string}
 	 */
-	static type: String = 'stack';
+	static type: string = 'stack';
 
 	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
 	 */
-	static description: String = 'Which stack do you want to use?';
+	static description: string = 'Which stack do you want to use?';
 
 	/**
 	 * The choices for the onboarding question.

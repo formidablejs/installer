@@ -1,19 +1,19 @@
 import { Onboard } from "./Onboard";
 
-export class Manager extends Onboard {
+export class Language extends Onboard {
 	/**
 	 * The name of the onboarding question.
 	 *
 	 * @var {string}
 	 */
-	static type: string = 'manager';
+	static type: string = 'language';
 
 	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
 	 */
-	static description: string = 'Which package manager do you want to use?';
+	static description: string = 'Will you be using Imba or TypeScript?';
 
 	/**
 	 * The choices for the onboarding question.
@@ -21,8 +21,7 @@ export class Manager extends Onboard {
 	 * @var {string[]}
 	 */
 	static choices: Array<string | object> = [
-		{ name: 'npm', value: 'npm', },
-		{ name: 'yarn', value: 'yarn', },
-		// { name: 'pnpm', value: 'pnpm', },
+		{ name: 'Imba', value: 'imba', },
+		{ name: 'TypeScript', value: 'typescript', },
 	]
 }
