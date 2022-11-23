@@ -8,28 +8,28 @@ export class Onboard {
 	 *
 	 * @var {string}
 	 */
-	static type: String;
+	static type: string;
 
 	/**
 	 * The question onboarding method.
 	 *
 	 * @var {string}
 	 */
-	static method: String = 'list';
+	static method: string = 'list';
 
 	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
 	 */
-	static description: String;
+	static description: string;
 
 	/**
 	 * The choices for the onboarding question.
 	 *
-	 * @var {string[]|Object[]}
+	 * @var {string[]|object[]}
 	 */
-	static choices: Array<String | Object>;
+	static choices: Array<string | object>;
 
 	/**
 	 * Make prompt.
