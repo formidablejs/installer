@@ -219,6 +219,10 @@ export class Scaffold {
 			deps.push(Database.resolveDependency(this.command.onboarding.database));
 		}
 
+		if (this.command.onboarding.manager === 'pnpm') {
+			deps.push('pluralize');
+		}
+
 		return deps;
 	}
 
@@ -234,7 +238,7 @@ export class Scaffold {
 		MailPublishable.make(this.output);
 
 		if (this.command.onboarding.type === 'full-stack') {
-			if (this.command.onboarding.scaffolding === 'blank') {
+			if (this.command.onboarding.scaffolding === 'mpa') {
 				WebPublishable.make(this.output);
 			} else if (this.command.onboarding.scaffolding === 'spa') {
 				SPAPublishable.make(this.output);
