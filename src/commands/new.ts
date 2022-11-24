@@ -107,8 +107,13 @@ export default class New extends Command {
 			args.name = basename(this.settings.application);
 		}
 
+		/** initiate scaffolding */
+		if (flags.language) this.onboarding.language = flags.language;
+
 		if (!this.onboarding.language) {
 			({ language: this.onboarding.language } = await Language.make());
+		} else {
+			this.log(color.green('! ') + dim(`Using ${this.onboarding.language == 'typescript' ? 'TypeScript' : 'Imba'} as the default Language`));
 		}
 
 		const scaffold = new Scaffold(args.name, this.settings.application, this, flags.dev, this.onboarding.language === 'typescript');
