@@ -219,9 +219,11 @@ export default class New extends Command {
 				this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'yarn' ? 'install' : ''}`));
 			}
 
-			this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
+			/** temporarily commenting this out: the mix script will automatically run when application runs in dev mode */
+			// this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
 		}
 
+		this.log(dim(`${space}${this.onboarding.manager} audit`));
 		this.log(dim(`${space}${this.onboarding.manager} start${this.onboarding.manager == 'npm' ? ' --':''} --dev`));
 	}
 }

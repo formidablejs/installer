@@ -162,9 +162,13 @@ export class Scaffold {
 		/** collection dependencies. */
 		const deps = this.getDependencies();
 
+		const flags = this.command.onboarding.manager == 'npm'
+			? '--prefer-offline --no-audit --progress=false'
+			: '--prefer-offline --no-audit --no-progress'
+
 		/** install dependencies. */
 		execSync(
-			`${this.command.onboarding.manager ?? 'npm'} ${deps.length > 0 && this.command.onboarding.manager === 'yarn' ? 'add' : 'install'} ${deps.join(' ')} ${this.command.onboarding.manager == 'pnpm' ? '' : '--legacy-peer-deps'}`,
+			`${this.command.onboarding.manager ?? 'npm'} ${deps.length > 0 && this.command.onboarding.manager === 'yarn' ? 'add' : 'install'} ${deps.join(' ')} ${this.command.onboarding.manager == 'pnpm' ? '' : '--legacy-peer-deps'} ${flags}`,
 			{ cwd: this.output, stdio: 'inherit' }
 		);
 
