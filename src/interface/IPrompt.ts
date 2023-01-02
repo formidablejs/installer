@@ -1,6 +1,7 @@
 export interface IPrompt {
-    name: String
-    message: String
-    type: String
-    choices?: Array<String | Object>
+    name: string
+    message: string
+    type: string
+    choices?: Array<string | object>
+    default?: string | number | null
 }

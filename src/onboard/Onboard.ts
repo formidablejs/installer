@@ -32,6 +32,13 @@ export class Onboard {
 	static choices: Array<string | object>;
 
 	/**
+	 * Default value for provided list.
+	 *
+	 * @var {string|number|null}
+	 */
+	static default?: string | number;
+
+	/**
 	 * Make prompt.
 	 *
 	 * @returns {Promise<void>}
@@ -45,6 +52,10 @@ export class Onboard {
 
 		if (this.method === 'list') {
 			prompt.choices = this.choices;
+
+			if (this.default) {
+				prompt.default = this.default
+			}
 		}
 
 		return await inquirer.prompt([prompt]);

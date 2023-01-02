@@ -19,6 +19,7 @@ import { tmpdir } from 'os';
 import { updateLine } from './updateLine';
 import { VueHook } from '../hooks/VueHook';
 import { WebPublishable } from '../publishable/WebPublishable';
+import { ViewResolverModifier } from '../modifier/ViewResolverModifier';
 import New from '../commands/new';
 const unzipper = require('unzipper');
 
@@ -162,9 +163,13 @@ export class Scaffold {
 		/** collection dependencies. */
 		const deps = this.getDependencies();
 
+		const flags = this.command.onboarding.manager == 'npm'
+			? '--prefer-offline --no-audit --progress=false'
+			: '--prefer-offline --no-audit --no-progress'
+
 		/** install dependencies. */
 		execSync(
-			`${this.command.onboarding.manager ?? 'npm'} ${deps.length > 0 && this.command.onboarding.manager === 'yarn' ? 'add' : 'install'} ${deps.join(' ')} ${this.command.onboarding.manager == 'pnpm' ? '' : '--legacy-peer-deps'}`,
+			`${this.command.onboarding.manager ?? 'npm'} ${deps.length > 0 && this.command.onboarding.manager === 'yarn' ? 'add' : 'install'} ${deps.join(' ')} ${this.command.onboarding.manager == 'pnpm' ? '' : '--legacy-peer-deps'} ${flags}`,
 			{ cwd: this.output, stdio: 'inherit' }
 		);
 
@@ -264,6 +269,10 @@ export class Scaffold {
 			if (['react', 'vue'].includes(this.command.onboarding.stack ?? '')) {
 				InertiaResolverModifier.make(this.output, this.ts);
 				InertiaConfigModifier.make(this.output, this.ts);
+			}
+
+			if (this.command.onboarding.stack?.toLowerCase() === 'imba' && this.command.onboarding.scaffolding === 'spa') {
+				ViewResolverModifier.make(this.output, this.ts)
 			}
 		}
 
