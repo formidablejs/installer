@@ -222,6 +222,7 @@ export default class New extends Command {
 			this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
 		}
 
+		this.log(dim(`${space}${this.onboarding.manager} audit`));
 		this.log(dim(`${space}${this.onboarding.manager} start${this.onboarding.manager == 'npm' ? ' --':''} --dev`));
 	}
 }
