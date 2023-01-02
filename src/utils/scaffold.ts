@@ -19,6 +19,7 @@ import { tmpdir } from 'os';
 import { updateLine } from './updateLine';
 import { VueHook } from '../hooks/VueHook';
 import { WebPublishable } from '../publishable/WebPublishable';
+import { ViewResolverModifier } from '../modifier/ViewResolverModifier';
 import New from '../commands/new';
 const unzipper = require('unzipper');
 
@@ -268,6 +269,10 @@ export class Scaffold {
 			if (['react', 'vue'].includes(this.command.onboarding.stack ?? '')) {
 				InertiaResolverModifier.make(this.output, this.ts);
 				InertiaConfigModifier.make(this.output, this.ts);
+			}
+
+			if (this.command.onboarding.stack?.toLowerCase() === 'imba' && this.command.onboarding.scaffolding === 'spa') {
+				ViewResolverModifier.make(this.output, this.ts)
 			}
 		}
 

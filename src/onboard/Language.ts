@@ -9,6 +9,13 @@ export class Language extends Onboard {
 	static type: string = 'language';
 
 	/**
+	 * The default value.
+	 *
+	 * @var {string}
+	 */
+	static default?: string = 'typescript';
+
+	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
