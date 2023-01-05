@@ -164,8 +164,8 @@ export class Scaffold {
 		const deps = this.getDependencies();
 
 		const flags = this.command.onboarding.manager == 'npm'
-			? '--prefer-offline --no-audit --progress=false'
-			: '--prefer-offline --no-audit --no-progress'
+			? '--no-audit --progress=false'
+			: '--no-audit --no-progress'
 
 		/** install dependencies. */
 		execSync(
