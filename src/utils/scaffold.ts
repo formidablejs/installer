@@ -1,7 +1,7 @@
 import { AuthEmailModifier } from '../modifier/AuthEmailModifier';
 import { AuthMailPublishable } from '../publishable/AuthMailPublishable';
 import { ClientUrlModifier } from '../modifier/ClientUrlModifier';
-import { copyFileSync, createWriteStream, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { copyFileSync, createWriteStream, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import { Database } from '../onboard';
 import { download } from "./download";
 import { execSync } from 'child_process';
@@ -21,6 +21,8 @@ import { VueHook } from '../hooks/VueHook';
 import { WebPublishable } from '../publishable/WebPublishable';
 import { ViewResolverModifier } from '../modifier/ViewResolverModifier';
 import New from '../commands/new';
+import { removeSync } from 'fs-extra';
+import { AuthResolverModifier } from '../modifier/AuthResolverModifier';
 const unzipper = require('unzipper');
 
 export class Scaffold {
@@ -210,7 +212,7 @@ export class Scaffold {
 		if (this.command.onboarding.type === 'full-stack') {
 			deps.push('@formidablejs/pretty-errors');
 
-			if (this.command.onboarding.stack?.toLowerCase() === 'imba' && this.command.onboarding.scaffolding === 'spa') {
+			if (this.command.onboarding.stack?.toLowerCase() === 'imba' && (this.command.onboarding.scaffolding === 'spa' || this.command.onboarding.scaffolding === 'spa-auth')) {
 				deps.push('@formidablejs/view');
 				deps.push('axios');
 			}
@@ -243,10 +245,28 @@ export class Scaffold {
 		MailPublishable.make(this.output);
 
 		if (this.command.onboarding.type === 'full-stack') {
-			if (this.command.onboarding.scaffolding === 'mpa') {
-				WebPublishable.make(this.output);
-			} else if (this.command.onboarding.scaffolding === 'spa') {
-				SPAPublishable.make(this.output);
+			if (this.command.onboarding.scaffolding === 'mpa' || this.command.onboarding.scaffolding === 'mpa-auth') {
+				const tags = []
+
+				if (this.command.onboarding.scaffolding === 'mpa-auth') {
+					tags.push('auth')
+				}
+
+				WebPublishable.make(this.output, tags);
+			} else if (this.command.onboarding.scaffolding === 'spa' || this.command.onboarding.scaffolding === 'spa-auth') {
+				const tags = []
+
+				if (this.command.onboarding.scaffolding === 'spa-auth') {
+					tags.push('auth', 'auth-common')
+				}
+
+				SPAPublishable.make(this.output, tags);
+
+				if (this.command.onboarding.scaffolding === 'spa-auth') {
+					removeSync(join(this.output, 'resources', 'frontend', 'components'))
+					unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'About.imba'))
+					unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'Home.imba'))
+				}
 			} else if (this.command.onboarding.stack && ['react', 'vue'].includes(this.command.onboarding.stack)) {
 				WebPublishable.make(this.output);
 				InertiaPublishable.make(this.output);
@@ -271,7 +291,11 @@ export class Scaffold {
 				InertiaConfigModifier.make(this.output, this.ts);
 			}
 
-			if (this.command.onboarding.stack?.toLowerCase() === 'imba' && this.command.onboarding.scaffolding === 'spa') {
+			if (this.command.onboarding.scaffolding?.toLowerCase() === 'mpa-auth') {
+				AuthResolverModifier.make(this.output, this.ts)
+			}
+
+			if (this.command.onboarding.stack?.toLowerCase() === 'imba' && (this.command.onboarding.scaffolding === 'spa' || this.command.onboarding.scaffolding === 'spa-auth')) {
 				ViewResolverModifier.make(this.output, this.ts)
 			}
 		}
@@ -448,7 +472,7 @@ export class Scaffold {
 	 *
 	 * @returns {Scaffold}
 	 */
-	 public npmrc(): Scaffold {
+	public npmrc(): Scaffold {
 		writeFileSync(join(this.output, '.npmrc'), "auto-install-peers=true\nstrict-peer-dependencies=false\n");
 
 		return this;

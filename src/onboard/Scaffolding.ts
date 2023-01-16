@@ -26,8 +26,16 @@ export class Scaffolding extends Onboard {
 			value: 'mpa',
 		},
 		{
+			name: 'Multi-page Application (with Auth template)',
+			value: 'mpa-auth',
+		},
+		{
 			name: 'Single-page Application',
 			value: 'spa',
+		},
+		{
+			name: 'Single-page Application (with Auth template)',
+			value: 'spa-auth',
 		}
 	];
 }
