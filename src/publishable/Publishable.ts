@@ -41,9 +41,16 @@ export class Publishable {
 	 * Run publishable.
 	 *
 	 * @param {string} cwd
+	 * @param {string[]} customTags
 	 * @returns {void}
 	 */
-	static make(cwd: string): void {
-		(new this(cwd)).publish();
+	static make(cwd: string, extraTags?: string[]): void {
+		const publishable = new this(cwd);
+
+		if (extraTags) {
+			publishable.tags = publishable.tags.concat(extraTags)
+		}
+
+		publishable.publish();
 	}
 }
