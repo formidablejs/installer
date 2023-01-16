@@ -37,7 +37,7 @@ export default class New extends Command {
 		git: Flags.boolean({ description: 'Initialize a Git repository', char: 'g' }),
 		type: Flags.string({ description: 'The type of application to create', options: ['api', 'full-stack'] }),
 		stack: Flags.string({ description: 'The default stack to use', options: ['imba', 'react', 'vue'] }),
-		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['mpa', 'spa'] }),
+		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['mpa', 'mpa-auth', 'spa', 'spa-auth'] }),
 		database: Flags.string({ description: 'The default database driver to use', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
 		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
@@ -91,7 +91,7 @@ export default class New extends Command {
 	public async run(): Promise<void> {
 		const { args, flags } = await this.parse(New);
 
-		welcome('Formidable');
+		welcome('FormidableJs');
 
 		if (/[^a-z0-9-_]/gi.test(args.name) && !['.', './'].includes(args.name)) {
 			return this.error(`${color.red('Invalid Application name.')}`);
@@ -219,8 +219,7 @@ export default class New extends Command {
 				this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'yarn' ? 'install' : ''}`));
 			}
 
-			/** temporarily commenting this out: the mix script will automatically run when application runs in dev mode */
-			// this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
+			this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
 		}
 
 		this.log(dim(`${space}${this.onboarding.manager} audit`));
