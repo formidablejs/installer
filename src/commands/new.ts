@@ -1,6 +1,6 @@
 import { color } from '@oclif/color';
 import { Command, Flags } from '@oclif/core';
-import { Database, Manager, Scaffolding, SQLiteGitIgnore, Stack, Type } from '../onboard';
+import { Authentication, Database, Manager, Scaffolding, SQLiteGitIgnore, Stack, Type } from '../onboard';
 import { existsSync } from 'fs';
 import { ISettings, IOnboarding } from '../interface';
 import { basename, join } from 'path';
@@ -10,6 +10,7 @@ import { waitForState } from '../utils/waitForState';
 import { isDirEmpty } from '../utils/isDirEmpty';
 import { dim } from '../utils/dim';
 import { Language } from '../onboard/Language';
+var inquirer = require('inquirer');
 
 export default class New extends Command {
 	/**
@@ -37,7 +38,7 @@ export default class New extends Command {
 		git: Flags.boolean({ description: 'Initialize a Git repository', char: 'g' }),
 		type: Flags.string({ description: 'The type of application to create', options: ['api', 'full-stack'] }),
 		stack: Flags.string({ description: 'The default stack to use', options: ['imba', 'react', 'vue'] }),
-		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['mpa', 'mpa-auth', 'spa', 'spa-auth'] }),
+		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['mpa', 'spa'] }),
 		database: Flags.string({ description: 'The default database driver to use', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
 		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
@@ -201,6 +202,18 @@ export default class New extends Command {
 		/** initialize git. */
 		if (flags.git) {
 			scaffold.git();
+		}
+
+		if (this.onboarding.scaffolding && this.onboarding.stack === 'imba') {
+			const { authentication } = await Authentication.make()
+
+			console.log('')
+
+			if (authentication) {
+				await scaffold.enableAuth(this.onboarding.scaffolding)
+			}
+
+			console.log('')
 		}
 
 		const space = '   ';

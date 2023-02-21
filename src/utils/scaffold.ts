@@ -1,7 +1,7 @@
 import { AuthEmailModifier } from '../modifier/AuthEmailModifier';
 import { AuthMailPublishable } from '../publishable/AuthMailPublishable';
 import { ClientUrlModifier } from '../modifier/ClientUrlModifier';
-import { copyFileSync, createWriteStream, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
+import { copyFileSync, createWriteStream, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import { Database } from '../onboard';
 import { download } from "./download";
 import { execSync } from 'child_process';
@@ -20,9 +20,9 @@ import { updateLine } from './updateLine';
 import { VueHook } from '../hooks/VueHook';
 import { WebPublishable } from '../publishable/WebPublishable';
 import { ViewResolverModifier } from '../modifier/ViewResolverModifier';
-import New from '../commands/new';
 import { removeSync } from 'fs-extra';
 import { AuthResolverModifier } from '../modifier/AuthResolverModifier';
+import New from '../commands/new';
 const unzipper = require('unzipper');
 
 export class Scaffold {
@@ -361,7 +361,7 @@ export class Scaffold {
 		let connection: string = '';
 
 		switch (this.command.onboarding.database) {
-			case 'mysql':
+			case 'mysql2':
 				connection = 'mysql';
 				break;
 
@@ -487,6 +487,24 @@ export class Scaffold {
 		execSync('git init --initial-branch=main', {
 			cwd: this.output, stdio: 'inherit'
 		});
+
+		return this;
+	}
+
+	/**
+	 * Enable auth.
+	 */
+	public enableAuth(scaffolding: string): Scaffold {
+		if (scaffolding === 'spa') {
+			SPAPublishable.make(this.output, ['auth', 'auth-common'])
+
+			removeSync(join(this.output, 'resources', 'frontend', 'components'))
+			unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'About.imba'))
+			unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'Home.imba'))
+		} else {
+			WebPublishable.make(this.output, ['auth'])
+			AuthResolverModifier.make(this.output, this.ts)
+		}
 
 		return this;
 	}
