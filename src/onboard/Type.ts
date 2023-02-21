@@ -9,6 +9,13 @@ export class Type extends Onboard {
 	static type: string = 'type';
 
 	/**
+	 * The default value.
+	 *
+	 * @var {string}
+	 */
+	static default?: string = 'full-stack';
+
+	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}

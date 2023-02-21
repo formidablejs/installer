@@ -9,6 +9,13 @@ export class Scaffolding extends Onboard {
 	static type: string = 'scaffolding';
 
 	/**
+	 * The default value.
+	 *
+	 * @var {string}
+	 */
+	static default?: string = 'spa';
+
+	/**
 	 * The description of the onboarding question.
 	 *
 	 * @var {string}
@@ -26,16 +33,8 @@ export class Scaffolding extends Onboard {
 			value: 'mpa',
 		},
 		{
-			name: 'Multi-page Application (with Auth template)',
-			value: 'mpa-auth',
-		},
-		{
 			name: 'Single-page Application',
 			value: 'spa',
-		},
-		{
-			name: 'Single-page Application (with Auth template)',
-			value: 'spa-auth',
 		}
 	];
 }
