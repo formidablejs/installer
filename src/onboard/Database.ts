@@ -22,7 +22,7 @@ export class Database extends Onboard {
 	 * @var {string[]|Object[]}
 	 */
 	static choices: Array<string | object> = [
-		{ name: 'MySQL / MariaDB', value: 'mysql' },
+		{ name: 'MySQL / MariaDB', value: 'mysql2' },
 		{ name: 'PostgreSQL / Amazon Redshift', value: 'pg' },
 		{ name: 'SQLite', value: 'sqlite3' },
 		{ name: 'MSSQL', value: 'tedious' },
@@ -39,7 +39,7 @@ export class Database extends Onboard {
 	static getDriver(database: string): string {
 		switch (database.toLowerCase()) {
 			case 'mysql / mariadb':
-				return 'mysql';
+				return 'mysql2';
 
 			case 'postgresql / amazon redshift':
 				return 'pg';

@@ -13,7 +13,7 @@ export class Stack extends Onboard {
 	 *
 	 * @var {string}
 	 */
-	static description: string = 'Which stack do you want to use?';
+	static description: string = 'What frontend stack do you want to use?';
 
 	/**
 	 * The choices for the onboarding question.
