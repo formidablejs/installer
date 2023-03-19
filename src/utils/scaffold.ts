@@ -219,6 +219,7 @@ export class Scaffold {
 
 			if (this.command.onboarding.stack && ['react', 'vue'].includes(this.command.onboarding.stack)) {
 				deps.push('@formidablejs/inertia');
+				deps.push('ts-loader');
 			}
 		}
 
@@ -270,6 +271,8 @@ export class Scaffold {
 			} else if (this.command.onboarding.stack && ['react', 'vue'].includes(this.command.onboarding.stack)) {
 				WebPublishable.make(this.output);
 				InertiaPublishable.make(this.output);
+
+				unlinkSync(join(this.output, 'resources', 'views', 'welcome.imba'))
 			}
 		}
 
@@ -297,6 +300,16 @@ export class Scaffold {
 
 			if (this.command.onboarding.stack?.toLowerCase() === 'imba' && (this.command.onboarding.scaffolding === 'spa' || this.command.onboarding.scaffolding === 'spa-auth')) {
 				ViewResolverModifier.make(this.output, this.ts)
+
+				const packageName = join(this.output, 'package.json');
+
+				const packageObject: any = JSON.parse(readFileSync(packageName).toString());
+
+				packageObject.development = {
+					"mode": "imba"
+				}
+
+				writeFileSync(packageName, JSON.stringify(packageObject, null, 2));
 			}
 		}
 
@@ -497,10 +510,6 @@ export class Scaffold {
 	public enableAuth(scaffolding: string): Scaffold {
 		if (scaffolding === 'spa') {
 			SPAPublishable.make(this.output, ['auth', 'auth-common'])
-
-			removeSync(join(this.output, 'resources', 'frontend', 'components'))
-			unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'About.imba'))
-			unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'Home.imba'))
 		} else {
 			WebPublishable.make(this.output, ['auth'])
 			AuthResolverModifier.make(this.output, this.ts)
