@@ -44,7 +44,9 @@ export default class New extends Command {
 		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
 		language: Flags.string({ description: 'The default language to use', options: ['imba', 'typescript'] }),
 		dev: Flags.boolean({ description: 'Use dev branch' }),
-		// ts: Flags.boolean({ description: 'Use TypeScript' }),
+		imba: Flags.boolean({ description: 'Create Imba Full-Stack application' }),
+		react: Flags.boolean({ description: 'Create React Full-Stack TypeScript application' }),
+		vue: Flags.boolean({ description: 'Create Vue Full-Stack TypeScript application' }),
 	};
 
 	/**
@@ -108,6 +110,46 @@ export default class New extends Command {
 			args.name = basename(this.settings.application);
 		}
 
+		const stacks = [];
+
+		if (flags.imba) {
+			stacks.push('Imba');
+		}
+
+		if (flags.react) {
+			stacks.push('React');
+		}
+
+		if (flags.vue) {
+			stacks.push('Vue');
+		}
+
+		if (stacks.length > 1) {
+			return this.error(color.red(`Cannot scaffolding ${stacks.join(', ').replace(/, ([^,]*)$/, ' and $1')} in the same application`));
+		}
+
+		if (flags.imba || flags.react || flags.vue) {
+			flags.language = flags.imba ? 'imba' : 'typescript';
+
+			if (flags.react) {
+				flags.stack = 'react';
+			} else if (flags.vue) {
+				flags.stack = 'vue';
+			} else if (flags.imba) {
+				flags.stack = 'imba';
+				flags.scaffolding = 'spa';
+			}
+
+			if (!flags.database) {
+				flags.database = 'skip';
+				flags['sqlite-git-ignore'] = true;
+			}
+
+			if (!flags.manager) {
+				flags.manager = 'npm';
+			}
+		}
+
 		/** initiate scaffolding */
 		if (flags.language) this.onboarding.language = flags.language;
 
@@ -124,9 +166,30 @@ export default class New extends Command {
 
 		/** start the onboarding. */
 		if (flags.type) this.onboarding.type = flags.type;
-		if (flags.stack) this.onboarding.stack = flags.stack;
-		if (flags.scaffolding) this.onboarding.scaffolding = flags.scaffolding;
-		if (flags.database) this.onboarding.database = Database.getDriver(flags.database);
+
+		/** if user has specified scaffolding and set it to "spa", set the application type to "full-stack". */
+		if (flags.scaffolding) {
+			this.onboarding.scaffolding = flags.scaffolding;
+
+			this.onboarding.stack = 'imba';
+			this.onboarding.type = 'full-stack';
+		}
+
+		/** if user has specified stack, set the application type to "full-stack". */
+		if (flags.stack) {
+			this.onboarding.stack = flags.stack;
+			this.onboarding.type = 'full-stack';
+		}
+
+		/** if user has skipped or set database to sqlite, git ignore database. */
+		if (flags.database) {
+			this.onboarding.database = Database.getDriver(flags.database);
+
+			if (['skip', 'SQLite'].includes(flags.database)) {
+				this.onboarding.sqliteGitIgnore = true;
+			}
+		}
+
 		if (flags['sqlite-git-ignore']) this.onboarding.sqliteGitIgnore = flags['sqlite-git-ignore'];
 		if (flags.manager) this.onboarding.manager = flags.manager;
 
