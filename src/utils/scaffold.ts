@@ -23,6 +23,8 @@ import { ViewResolverModifier } from '../modifier/ViewResolverModifier';
 import { removeSync } from 'fs-extra';
 import { AuthResolverModifier } from '../modifier/AuthResolverModifier';
 import New from '../commands/new';
+import { WatchScriptModifier } from '../modifier/WatchScriptModifier';
+import { SvelteHook } from '../hooks/SvelteHook';
 const unzipper = require('unzipper');
 
 export class Scaffold {
@@ -57,9 +59,9 @@ export class Scaffold {
 	/**
 	 * Use TypeScript.
 	 *
-	 * @var {Boolean} ts
+	 * @var {boolean} ts
 	 */
-	protected ts: Boolean = false;
+	protected ts: boolean = false;
 
 	/**
 	 * Scaffold application.
@@ -67,10 +69,10 @@ export class Scaffold {
 	 * @param {string} appName application name
 	 * @param {string} output Output directory
 	 * @param {New} command
-	 * @param {Boolean} dev
+	 * @param {boolean} dev
 	 * @returns {void}
 	 */
-	constructor(protected appName: string, protected output: string, protected command: New, dev: Boolean = false, ts: Boolean = false) {
+	constructor(protected appName: string, protected output: string, protected command: New, dev: boolean = false, ts: boolean = false) {
 		if (ts) {
 			this.url = 'https://github.com/formidablejs/formidablejs-typescript/archive/refs/heads/{branch}.zip';
 		}
@@ -165,9 +167,17 @@ export class Scaffold {
 		/** collection dependencies. */
 		const deps = this.getDependencies();
 
-		const flags = this.command.onboarding.manager == 'npm'
-			? '--no-audit --progress=false'
-			: '--no-audit --no-progress'
+		let flags = '';
+
+		if (this.command.onboarding.silentInstall) {
+			if (this.command.onboarding.manager == 'npm') {
+				flags = '--no-audit --progress=false';
+			} else if (this.command.onboarding.manager == 'yarn') {
+				flags = '--no-audit --no-progress --silent';
+			} else if (this.command.onboarding.manager == 'pnpm') {
+				flags = '--silent';
+			}
+		}
 
 		/** install dependencies. */
 		execSync(
@@ -217,9 +227,12 @@ export class Scaffold {
 				deps.push('axios');
 			}
 
-			if (this.command.onboarding.stack && ['react', 'vue'].includes(this.command.onboarding.stack)) {
+			if (this.command.onboarding.stack && ['react', 'svelte', 'vue'].includes(this.command.onboarding.stack)) {
 				deps.push('@formidablejs/inertia');
-				deps.push('ts-loader');
+
+				if (this.command.onboarding.stack !== 'svelte') {
+					deps.push('ts-loader');
+				}
 			}
 		}
 
@@ -268,11 +281,25 @@ export class Scaffold {
 					unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'About.imba'))
 					unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'Home.imba'))
 				}
-			} else if (this.command.onboarding.stack && ['react', 'vue'].includes(this.command.onboarding.stack)) {
+			} else if (this.command.onboarding.stack && ['react', 'svelte', 'vue'].includes(this.command.onboarding.stack)) {
 				WebPublishable.make(this.output);
 				InertiaPublishable.make(this.output);
 
-				unlinkSync(join(this.output, 'resources', 'views', 'welcome.imba'))
+				if (this.command.onboarding.stack.toLowerCase() === 'svelte') {
+					SvelteHook.make(this.output);
+				}
+
+				if (this.command.onboarding?.manager?.toLowerCase() !== 'npm') {
+					WatchScriptModifier.make(this.output, this.ts, this.command.onboarding.manager);
+				}
+
+				if (this.command.onboarding.stack === 'svelte') {
+					unlinkSync(join(this.output, 'resources', 'js', 'bootstrap.ts'))
+				}
+
+				if (existsSync(join(this.output, 'resources', 'views', 'welcome.imba'))) {
+					unlinkSync(join(this.output, 'resources', 'views', 'welcome.imba'))
+				}
 			}
 		}
 
@@ -289,7 +316,7 @@ export class Scaffold {
 			PrettyErrorsModifier.make(this.output, this.ts);
 			SessionModifier.make(this.output, this.ts);
 
-			if (['react', 'vue'].includes(this.command.onboarding.stack ?? '')) {
+			if (['react', 'svelte', 'vue'].includes(this.command.onboarding.stack ?? '')) {
 				InertiaResolverModifier.make(this.output, this.ts);
 				InertiaConfigModifier.make(this.output, this.ts);
 			}
@@ -301,15 +328,17 @@ export class Scaffold {
 			if (this.command.onboarding.stack?.toLowerCase() === 'imba' && (this.command.onboarding.scaffolding === 'spa' || this.command.onboarding.scaffolding === 'spa-auth')) {
 				ViewResolverModifier.make(this.output, this.ts)
 
-				const packageName = join(this.output, 'package.json');
+				if (this.command.onboarding.manager !== 'pnpm') {
+					const packageName = join(this.output, 'package.json');
 
-				const packageObject: any = JSON.parse(readFileSync(packageName).toString());
+					const packageObject: any = JSON.parse(readFileSync(packageName).toString());
 
-				packageObject.development = {
-					"mode": "imba"
+					packageObject.development = {
+						"mode": "imba"
+					}
+
+					writeFileSync(packageName, JSON.stringify(packageObject, null, 4));
 				}
-
-				writeFileSync(packageName, JSON.stringify(packageObject, null, 2));
 			}
 		}
 

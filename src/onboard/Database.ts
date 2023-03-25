@@ -19,7 +19,7 @@ export class Database extends Onboard {
 	/**
 	 * The choices for the onboarding question.
 	 *
-	 * @var {string[]|Object[]}
+	 * @var {string[]|object[]}
 	 */
 	static choices: Array<string | object> = [
 		{ name: 'MySQL / MariaDB', value: 'mysql2' },

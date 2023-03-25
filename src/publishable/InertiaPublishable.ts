@@ -13,5 +13,5 @@ export class InertiaPublishable extends Publishable {
 	 *
 	 * @var {string[]} package
 	 */
-	protected tags: string[] = ['vendor', 'common'];
+	protected tags: string[] = ['common', 'vendor'];
 }
