@@ -4,6 +4,7 @@ export interface IOnboarding {
 	scaffolding: string | null
 	database: string | null
 	sqliteGitIgnore: boolean | null
+	silentInstall: boolean | null
 	manager: string | null
 	language: 'imba' | 'typescript' | string | null
 }

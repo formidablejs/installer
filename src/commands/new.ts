@@ -35,18 +35,20 @@ export default class New extends Command {
 	 * @var {object}
 	 */
 	static flags = {
-		git: Flags.boolean({ description: 'Initialize a Git repository', char: 'g' }),
-		type: Flags.string({ description: 'The type of application to create', options: ['api', 'full-stack'] }),
-		stack: Flags.string({ description: 'The default stack to use', options: ['imba', 'react', 'vue'] }),
-		scaffolding: Flags.string({ description: 'The default scaffolding to use', options: ['mpa', 'spa'] }),
-		database: Flags.string({ description: 'The default database driver to use', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
+		'silent-install': Flags.boolean({ description: 'Install silently', char: 'q' }),
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
-		manager: Flags.string({ description: 'The default package manager to use', options: ['npm', 'yarn'] }),
-		language: Flags.string({ description: 'The default language to use', options: ['imba', 'typescript'] }),
+		database: Flags.string({ description: 'The default database driver to use', char: 'd', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
 		dev: Flags.boolean({ description: 'Use dev branch' }),
+		git: Flags.boolean({ description: 'Initialize a Git repository', char: 'g' }),
 		imba: Flags.boolean({ description: 'Create Imba Full-Stack application' }),
-		react: Flags.boolean({ description: 'Create React Full-Stack TypeScript application' }),
-		vue: Flags.boolean({ description: 'Create Vue Full-Stack TypeScript application' }),
+		language: Flags.string({ description: 'The default language to use', char: 'l', options: ['imba', 'typescript'] }),
+		manager: Flags.string({ description: 'The default package manager to use', char: 'm', options: ['npm', 'pnpm', 'yarn'] }),
+		react: Flags.boolean({ description: 'Create React Full-Stack application' }),
+		scaffolding: Flags.string({ description: 'The default scaffolding to use', char: 'S', options: ['mpa', 'spa'] }),
+		stack: Flags.string({ description: 'The default stack to use', char: 's', options: ['imba', 'react', 'svelte', 'vue'] }),
+		svelte: Flags.boolean({ description: 'Create Svelte Full-Stack application' }),
+		type: Flags.string({ description: 'The type of application to create', char: 't', options: ['api', 'full-stack'] }),
+		vue: Flags.boolean({ description: 'Create Vue Full-Stack application' }),
 	};
 
 	/**
@@ -82,6 +84,7 @@ export default class New extends Command {
 		scaffolding: null,
 		database: null,
 		sqliteGitIgnore: null,
+		silentInstall: null,
 		manager: null,
 		language: null
 	};
@@ -120,6 +123,10 @@ export default class New extends Command {
 			stacks.push('React');
 		}
 
+		if (flags.svelte) {
+			stacks.push('Svelte');
+		}
+
 		if (flags.vue) {
 			stacks.push('Vue');
 		}
@@ -128,16 +135,23 @@ export default class New extends Command {
 			return this.error(color.red(`Cannot scaffolding ${stacks.join(', ').replace(/, ([^,]*)$/, ' and $1')} in the same application`));
 		}
 
-		if (flags.imba || flags.react || flags.vue) {
-			flags.language = flags.imba ? 'imba' : 'typescript';
+		if (flags.imba || flags.react || flags.svelte || flags.vue) {
+			if (!flags.language) {
+				flags.language = flags.imba ? 'imba' : 'typescript';
+			}
 
 			if (flags.react) {
 				flags.stack = 'react';
 			} else if (flags.vue) {
 				flags.stack = 'vue';
+			} else if (flags.svelte) {
+				flags.stack = 'svelte';
 			} else if (flags.imba) {
 				flags.stack = 'imba';
-				flags.scaffolding = 'spa';
+
+				if (!flags.scaffolding) {
+					flags.scaffolding = 'spa';
+				}
 			}
 
 			if (!flags.database) {
@@ -157,6 +171,10 @@ export default class New extends Command {
 			({ language: this.onboarding.language } = await Language.make());
 		} else {
 			this.log(color.green('! ') + dim(`Using ${this.onboarding.language == 'typescript' ? 'TypeScript' : 'Imba'} as the default Language`));
+		}
+
+		if (flags['silent-install']) {
+			this.onboarding.silentInstall = true;
 		}
 
 		const scaffold = new Scaffold(args.name, this.settings.application, this, flags.dev, this.onboarding.language === 'typescript');
@@ -242,7 +260,7 @@ export default class New extends Command {
 		}
 
 		if (!scaffold.isSuccessful) {
-			this.log(color.red('Scaffolding failed. It could be your network connection.'));
+			this.log(color.red('Scaffolding failed. It could be your network connection. Please try again.'));
 			this.exit(1);
 		}
 
@@ -288,17 +306,14 @@ export default class New extends Command {
 			this.log(dim(`${space}cd ${args.name}`));
 		}
 
-		if (this.onboarding.type === 'full-stack' && ['react', 'vue'].includes(this.onboarding.stack?.toLowerCase() ?? '')) {
-			if (this.onboarding.manager == 'pnpm') {
-				this.log(dim(`${space}${this.onboarding.manager} install webpack --save-dev`));
-			} else {
-				this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'yarn' ? 'install' : ''}`));
-			}
-
-			this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'pnpm' ? 'run ' : ''}mix:dev`));
+		if (this.onboarding.type === 'full-stack' && ['react', 'svelte', 'vue'].includes(this.onboarding.stack?.toLowerCase() ?? '')) {
+			this.log(dim(`${space}${this.onboarding.manager} install ${this.onboarding.manager == 'pnpm' ? 'webpack --save-dev' : ''}`));
 		}
 
-		this.log(dim(`${space}${this.onboarding.manager} audit`));
-		this.log(dim(`${space}${this.onboarding.manager} start${this.onboarding.manager == 'npm' ? ' --':''} --dev`));
+		if (flags['silent-install']) {
+			this.log(dim(`${space}${this.onboarding.manager} audit`));
+		}
+
+		this.log(dim(`${space}node craftsman serve --dev`));
 	}
 }
