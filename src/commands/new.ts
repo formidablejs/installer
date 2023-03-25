@@ -257,6 +257,8 @@ export default class New extends Command {
 		/** wait for the scaffolding to finish. */
 		if (scaffold.isBusy) {
 			await waitForState(() => !scaffold.isBusy);
+
+			setTimeout(() => { }, 10000)
 		}
 
 		if (!scaffold.isSuccessful) {
