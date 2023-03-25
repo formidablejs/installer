@@ -307,13 +307,7 @@ export default class New extends Command {
 		}
 
 		if (this.onboarding.type === 'full-stack' && ['react', 'svelte', 'vue'].includes(this.onboarding.stack?.toLowerCase() ?? '')) {
-			if (this.onboarding.manager == 'pnpm') {
-				this.log(dim(`${space}${this.onboarding.manager} install webpack --save-dev`));
-			} else {
-				this.log(dim(`${space}${this.onboarding.manager} install`));
-			}
-
-			this.log(dim(`${space}${this.onboarding.manager} ${this.onboarding.manager != 'yarn' ? 'run ' : ''}mix:dev`));
+			this.log(dim(`${space}${this.onboarding.manager} install ${this.onboarding.manager == 'pnpm' ? 'webpack --save-dev' : ''}`));
 		}
 
 		if (flags['silent-install']) {
