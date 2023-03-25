@@ -22,7 +22,7 @@ export class Manager extends Onboard {
 	 */
 	static choices: Array<string | object> = [
 		{ name: 'npm', value: 'npm', },
+		{ name: 'pnpm', value: 'pnpm', },
 		{ name: 'yarn', value: 'yarn', },
-		// { name: 'pnpm', value: 'pnpm', },
 	]
 }

@@ -1,3 +1,4 @@
+import { dim } from '../utils/dim';
 import { Onboard } from "./Onboard";
 
 export class Stack extends Onboard {
@@ -18,11 +19,12 @@ export class Stack extends Onboard {
 	/**
 	 * The choices for the onboarding question.
 	 *
-	 * @var {string[]|Object[]}
+	 * @var {string[]|object[]}
 	 */
-	static choices: Array<String | Object> = [
+	static choices: Array<string | object> = [
 		{ name: 'Imba', value: 'imba' },
 		{ name: 'React', value: 'react' },
+		{ name: `Svelte ${dim('(experimental)')}`, value: 'svelte' },
 		{ name: 'Vue', value: 'vue' },
 	];
 }
