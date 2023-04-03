@@ -10,6 +10,7 @@ import { waitForState } from '../utils/waitForState';
 import { isDirEmpty } from '../utils/isDirEmpty';
 import { dim } from '../utils/dim';
 import { Language } from '../onboard/Language';
+import { sleep } from '../utils/sleep';
 var inquirer = require('inquirer');
 
 export default class New extends Command {
@@ -258,7 +259,7 @@ export default class New extends Command {
 		if (scaffold.isBusy) {
 			await waitForState(() => !scaffold.isBusy);
 
-			setTimeout(() => { }, 10000)
+			await sleep(5000)
 		}
 
 		if (!scaffold.isSuccessful) {
