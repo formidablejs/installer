@@ -10,6 +10,7 @@ import { waitForState } from '../utils/waitForState';
 import { isDirEmpty } from '../utils/isDirEmpty';
 import { dim } from '../utils/dim';
 import { Language } from '../onboard/Language';
+import { sleep } from '../utils/sleep';
 var inquirer = require('inquirer');
 
 export default class New extends Command {
@@ -37,7 +38,10 @@ export default class New extends Command {
 	static flags = {
 		'silent-install': Flags.boolean({ description: 'Install silently', char: 'q' }),
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
-		database: Flags.string({ description: 'The default database driver to use', char: 'd', options: ['MySQL / MariaDB', 'PostgreSQL / Amazon Redshift', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
+		'use-pnpm': Flags.boolean({ description: 'Use pnpm instead of npm or yarn', char: 'p' }),
+        'use-npm': Flags.boolean({ description: 'Use npm instead of pnpm or yarn', char: 'n' }),
+        'use-yarn': Flags.boolean({ description: 'Use yarn instead of pnpm or npm', char: 'y' }),
+		database: Flags.string({ description: 'The default database driver to use', char: 'd', options: ['MySQL', 'PostgreSQL', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
 		dev: Flags.boolean({ description: 'Use dev branch' }),
 		git: Flags.boolean({ description: 'Initialize a Git repository', char: 'g' }),
 		imba: Flags.boolean({ description: 'Create Imba Full-Stack application' }),
@@ -113,6 +117,30 @@ export default class New extends Command {
 			args.name = basename(this.settings.application);
 		}
 
+		if (!flags.manager) {
+			const managers = [];
+
+			if (flags['use-pnpm']) {
+				managers.push('pnpm');
+			}
+
+			if (flags['use-npm']) {
+				managers.push('npm');
+			}
+
+			if (flags['use-yarn']) {
+				managers.push('yarn');
+			}
+
+			if (managers.length > 1) {
+				return this.error(color.red(`Cannot use ${managers.join(', ').replace(/, ([^,]*)$/, ' and $1')} in the same application`));
+			}
+
+			if (managers.length === 1) {
+				flags.manager = managers[0];
+			}
+		}
+
 		const stacks = [];
 
 		if (flags.imba) {
@@ -165,12 +193,12 @@ export default class New extends Command {
 		}
 
 		/** initiate scaffolding */
-		if (flags.language) this.onboarding.language = flags.language;
-
 		if (!this.onboarding.language) {
-			({ language: this.onboarding.language } = await Language.make());
-		} else {
-			this.log(color.green('! ') + dim(`Using ${this.onboarding.language == 'typescript' ? 'TypeScript' : 'Imba'} as the default Language`));
+			if (flags.language) {
+				this.onboarding.language = flags.language;
+			} else {
+				this.onboarding.language = 'typescript';
+			}
 		}
 
 		if (flags['silent-install']) {
@@ -258,7 +286,7 @@ export default class New extends Command {
 		if (scaffold.isBusy) {
 			await waitForState(() => !scaffold.isBusy);
 
-			setTimeout(() => { }, 10000)
+			await sleep(5000)
 		}
 
 		if (!scaffold.isSuccessful) {
@@ -276,6 +304,11 @@ export default class New extends Command {
 			.apiUpdates()
 			.cache()
 			.enableAuthMailers();
+
+		/** enable type safety for typescript applications. */
+		if (this.onboarding.language === 'typescript') {
+			scaffold.enableTypeSafety();
+		}
 
 		/** add npmrc file. */
 		if (this.onboarding.manager == 'pnpm') {
