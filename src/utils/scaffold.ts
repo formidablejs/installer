@@ -546,4 +546,35 @@ export class Scaffold {
 
 		return this;
 	}
+
+	/**
+	 * Enable type safety.
+	 *
+	 * @returns {Scaffold}
+	 */
+	public enableTypeSafety(): Scaffold {
+		if (!this.ts) {
+			return this;
+		}
+
+		const packageName = join(this.output, 'package.json');
+
+		const packageObject: any = JSON.parse(readFileSync(packageName).toString());
+
+		if (this.command.onboarding.manager !== 'pnpm') {
+			packageObject.development['commands'] = [
+				"node craftsman types:generate"
+			]
+		} else {
+			packageObject.development = {
+				commands: [
+					"node craftsman types:generate"
+				]
+			}
+		}
+
+		writeFileSync(packageName, JSON.stringify(packageObject, null, 4));
+
+		return this;
+	}
 }
