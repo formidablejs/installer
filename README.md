@@ -1,5 +1,5 @@
 # Formidable Installer
-Formidable is a Imba Framework for Rapid API Development.
+A TypeScript & Imba Full-stack Framework for Nodejs.
 
 ![npm](https://img.shields.io/npm/v/@formidablejs/installer)
 ![GitHub](https://img.shields.io/github/license/formidablejs/installer)
