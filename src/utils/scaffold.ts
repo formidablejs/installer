@@ -561,16 +561,14 @@ export class Scaffold {
 
 		const packageObject: any = JSON.parse(readFileSync(packageName).toString());
 
-		const ex = ['react', 'vue'].includes(this.command.onboarding.stack?.toLowerCase() ?? '') ? ' --export' : '';
-
 		if (this.command.onboarding.manager !== 'pnpm') {
 			packageObject.development['commands'] = [
-				`node craftsman types:generate${ex}`
+				'node craftsman types:generate'
 			]
 		} else {
 			packageObject.development = {
 				commands: [
-					`node craftsman types:generate${ex}`
+					'node craftsman types:generate'
 				]
 			}
 		}
