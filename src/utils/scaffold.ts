@@ -559,19 +559,19 @@ export class Scaffold {
 
 		const packageName = join(this.output, 'package.json');
 
-		const packageObject: any = JSON.parse(readFileSync(packageName).toString());
+		let packageObject: any = JSON.parse(readFileSync(packageName).toString());
 
-		if (this.command.onboarding.manager !== 'pnpm') {
-			packageObject.development['commands'] = [
-				'node craftsman types:generate'
-			]
-		} else {
-			packageObject.development = {
+		if (packageObject.development === undefined) {
+			packageObject.development = {};
+		}
+
+		packageObject = Object.assign(packageObject, {
+			development: {
 				commands: [
 					'node craftsman types:generate'
 				]
 			}
-		}
+		});
 
 		writeFileSync(packageName, JSON.stringify(packageObject, null, 4));
 
