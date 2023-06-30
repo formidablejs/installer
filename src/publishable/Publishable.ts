@@ -29,11 +29,13 @@ export class Publishable {
 	 *
 	 * @returns {void}
 	 */
-	publish(): void {
-		console.log(color.green('Tagging') + ` ${this.package}:` + color.green(`${this.tags.join(',')}`));
+	publish(verbose?: boolean): void {
+		if (verbose) {
+			console.log(color.green('Tagging') + ` ${this.package}:` + color.green(`${this.tags.join(',')}`));
+		}
 
 		execSync(`node craftsman package:publish --package=${this.package} --tag=${this.tags.join(',')} --force`, {
-			cwd: this.cwd, stdio: 'inherit'
+			cwd: this.cwd, stdio: verbose ? 'inherit' : 'ignore'
 		});
 	}
 
@@ -44,13 +46,13 @@ export class Publishable {
 	 * @param {string[]} customTags
 	 * @returns {void}
 	 */
-	static make(cwd: string, extraTags?: string[]): void {
+	static make(cwd: string, extraTags?: string[], verbose?: boolean): void {
 		const publishable = new this(cwd);
 
 		if (extraTags) {
 			publishable.tags = publishable.tags.concat(extraTags)
 		}
 
-		publishable.publish();
+		publishable.publish(verbose);
 	}
 }

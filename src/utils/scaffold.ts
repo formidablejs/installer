@@ -253,10 +253,12 @@ export class Scaffold {
 	 * @returns {Scaffold}
 	 */
 	public publish(): Scaffold {
-		this.command.log(' ');
+		if (this.command.verbose) {
+			this.command.log(' ');
+		}
 
-		AuthMailPublishable.make(this.output);
-		MailPublishable.make(this.output);
+		AuthMailPublishable.make(this.output, [], this.command.verbose);
+		MailPublishable.make(this.output, [], this.command.verbose);
 
 		if (this.command.onboarding.type === 'full-stack') {
 			if (this.command.onboarding.scaffolding === 'mpa' || this.command.onboarding.scaffolding === 'mpa-auth') {
@@ -266,7 +268,7 @@ export class Scaffold {
 					tags.push('auth')
 				}
 
-				WebPublishable.make(this.output, tags);
+				WebPublishable.make(this.output, tags, this.command.verbose);
 			} else if (this.command.onboarding.scaffolding === 'spa' || this.command.onboarding.scaffolding === 'spa-auth') {
 				const tags = []
 
@@ -274,7 +276,7 @@ export class Scaffold {
 					tags.push('auth', 'auth-common')
 				}
 
-				SPAPublishable.make(this.output, tags);
+				SPAPublishable.make(this.output, tags, this.command.verbose);
 
 				if (this.command.onboarding.scaffolding === 'spa-auth') {
 					removeSync(join(this.output, 'resources', 'frontend', 'components'))
@@ -282,8 +284,8 @@ export class Scaffold {
 					unlinkSync(join(this.output, 'resources', 'frontend', 'pages', 'Home.imba'))
 				}
 			} else if (this.command.onboarding.stack && ['react', 'svelte', 'vue'].includes(this.command.onboarding.stack)) {
-				WebPublishable.make(this.output);
-				InertiaPublishable.make(this.output);
+				WebPublishable.make(this.output, [], this.command.verbose);
+				InertiaPublishable.make(this.output, [], this.command.verbose);
 
 				if (this.command.onboarding.stack.toLowerCase() === 'svelte') {
 					SvelteHook.make(this.output);
@@ -538,9 +540,9 @@ export class Scaffold {
 	 */
 	public enableAuth(scaffolding: string): Scaffold {
 		if (scaffolding === 'spa') {
-			SPAPublishable.make(this.output, ['auth', 'auth-common'])
+			SPAPublishable.make(this.output, ['auth', 'auth-common'], this.command.verbose)
 		} else {
-			WebPublishable.make(this.output, ['auth'])
+			WebPublishable.make(this.output, ['auth'], this.command.verbose)
 			AuthResolverModifier.make(this.output, this.ts)
 		}
 
