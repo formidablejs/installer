@@ -579,4 +579,19 @@ export class Scaffold {
 
 		return this;
 	}
+
+	/***
+	 * Build application.
+	 */
+	build(): Scaffold {
+		if (!((this.command.onboarding.type === 'full-stack' && this.command.onboarding.stack === 'imba') || this.command.onboarding.type === 'api')) {
+			return this;
+		}
+
+		execSync(`${this.command.onboarding.manager} run build`, {
+			cwd: this.output, stdio: 'ignore'
+		});
+
+		return this;
+	}
 }
