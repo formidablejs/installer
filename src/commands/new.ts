@@ -313,7 +313,8 @@ export default class New extends Command {
 			.setDatabase()
 			.apiUpdates()
 			.cache()
-			.enableAuthMailers();
+			.enableAuthMailers()
+			.build();
 
 		/** enable type safety for typescript applications. */
 		if (this.onboarding.language === 'typescript') {
