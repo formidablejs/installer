@@ -559,6 +559,10 @@ export class Scaffold {
 			return this;
 		}
 
+		if (this.command.onboarding.type !== 'full-stack') {
+			return this;
+		}
+
 		const packageName = join(this.output, 'package.json');
 
 		let packageObject: any = JSON.parse(readFileSync(packageName).toString());
@@ -584,10 +588,6 @@ export class Scaffold {
 	 * Build application.
 	 */
 	build(): Scaffold {
-		if (!((this.command.onboarding.type === 'full-stack' && this.command.onboarding.stack === 'imba') || this.command.onboarding.type === 'api')) {
-			return this;
-		}
-
 		execSync(`${this.command.onboarding.manager} run build`, {
 			cwd: this.output, stdio: 'ignore'
 		});
