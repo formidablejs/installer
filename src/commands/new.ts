@@ -38,7 +38,7 @@ export default class New extends Command {
 	static flags = {
 		'silent-install': Flags.boolean({ description: 'Install silently', char: 'q' }),
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
-		'use-pnpm': Flags.boolean({ description: 'Use pnpm instead of npm or yarn', char: 'p' }),
+		'use-pnpm': Flags.boolean({ description: 'Use pnpm instead of npm, yarn or bun', char: 'p' }),
         'use-npm': Flags.boolean({ description: 'Use npm instead of pnpm, yarn or bun', char: 'n' }),
         'use-yarn': Flags.boolean({ description: 'Use yarn instead of pnpm, npm or bun', char: 'y' }),
         'use-bun': Flags.boolean({ description: 'Use bun instead of pnpm, yarn or npm', char: 'b' }),
