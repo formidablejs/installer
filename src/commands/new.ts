@@ -39,14 +39,15 @@ export default class New extends Command {
 		'silent-install': Flags.boolean({ description: 'Install silently', char: 'q' }),
 		'sqlite-git-ignore': Flags.boolean({ description: 'Add SQLite Database to gitignore', char: 'G' }),
 		'use-pnpm': Flags.boolean({ description: 'Use pnpm instead of npm or yarn', char: 'p' }),
-        'use-npm': Flags.boolean({ description: 'Use npm instead of pnpm or yarn', char: 'n' }),
-        'use-yarn': Flags.boolean({ description: 'Use yarn instead of pnpm or npm', char: 'y' }),
+        'use-npm': Flags.boolean({ description: 'Use npm instead of pnpm, yarn or bun', char: 'n' }),
+        'use-yarn': Flags.boolean({ description: 'Use yarn instead of pnpm, npm or bun', char: 'y' }),
+        'use-bun': Flags.boolean({ description: 'Use bun instead of pnpm, yarn or npm', char: 'b' }),
 		database: Flags.string({ description: 'The default database driver to use', char: 'd', options: ['MySQL', 'PostgreSQL', 'SQLite', 'MSSQL', 'Oracle', 'skip'] }),
 		dev: Flags.boolean({ description: 'Use dev branch' }),
 		git: Flags.boolean({ description: 'Initialize a Git repository', char: 'g' }),
 		imba: Flags.boolean({ description: 'Create Imba Full-Stack application' }),
 		language: Flags.string({ description: 'The default language to use', char: 'l', options: ['imba', 'typescript'] }),
-		manager: Flags.string({ description: 'The default package manager to use', char: 'm', options: ['npm', 'pnpm', 'yarn'] }),
+		manager: Flags.string({ description: 'The default package manager to use', char: 'm', options: ['npm', 'pnpm', 'yarn', 'bun'] }),
 		react: Flags.boolean({ description: 'Create React Full-Stack application' }),
 		scaffolding: Flags.string({ description: 'The default scaffolding to use', char: 'S', options: ['mpa', 'spa'] }),
 		stack: Flags.string({ description: 'The default stack to use', char: 's', options: ['imba', 'react', 'svelte', 'vue'] }),
@@ -140,6 +141,10 @@ export default class New extends Command {
 
 			if (flags['use-yarn']) {
 				managers.push('yarn');
+			}
+
+			if (flags['use-bun']) {
+				managers.push('bun');
 			}
 
 			if (managers.length > 1) {
@@ -356,7 +361,7 @@ export default class New extends Command {
 			this.log(dim(`${space}${this.onboarding.manager} install ${this.onboarding.manager == 'pnpm' ? 'webpack --save-dev' : ''}`));
 		}
 
-		if (flags['silent-install']) {
+		if (flags['silent-install'] && this.onboarding.manager !== 'bun') {
 			this.log(dim(`${space}${this.onboarding.manager} audit`));
 		}
 

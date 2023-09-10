@@ -176,7 +176,23 @@ export class Scaffold {
 				flags = '--no-audit --no-progress --silent';
 			} else if (this.command.onboarding.manager == 'pnpm') {
 				flags = '--silent';
+			} else if (this.command.onboarding.manager == 'bun') {
+				flags = '--silent';
 			}
+		}
+
+		if (this.command.onboarding.manager == 'bun') {
+			const packageName = join(this.output, 'package.json');
+
+			const packageObject: any = JSON.parse(readFileSync(packageName).toString());
+
+			packageObject.trustedDependencies = [
+				"bcrypt",
+				"esbuild",
+				"sqlite3"
+			];
+
+			writeFileSync(packageName, JSON.stringify(packageObject, null, 4));
 		}
 
 		/** install dependencies. */
