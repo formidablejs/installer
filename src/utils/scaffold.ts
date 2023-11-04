@@ -186,6 +186,10 @@ export class Scaffold {
 
 			const packageObject: any = JSON.parse(readFileSync(packageName).toString());
 
+			packageObject.overrides = {
+				"imba": packageObject.dependencies.imba
+			};
+
 			packageObject.trustedDependencies = [
 				"bcrypt",
 				"esbuild",
