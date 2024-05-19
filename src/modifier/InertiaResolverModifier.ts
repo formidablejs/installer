@@ -7,13 +7,13 @@ export class InertiaResolverModifier extends Modifier {
 	 *
 	 * @var {string} file
 	 */
-	protected file: string = join('config', 'app.imba');
+	protected file: string = join('bootstrap', 'resolvers.imba');
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public getFile(): string {
-		return join('config', `app.${this.ts ? 'ts' : 'imba'}`);
+		return join('bootstrap', `resolvers.${this.ts ? 'ts' : 'imba'}`);
 	}
 
 	/**
@@ -29,7 +29,7 @@ export class InertiaResolverModifier extends Modifier {
 		}
 
 		if (line.trim() == `MaintenanceServiceResolver${this.ts ? ',' : ''}`) {
-			return `${line}\n		InertiaServiceResolver${this.ts ? ',' : ''}`;
+			return `${line}\n	InertiaServiceResolver${this.ts ? ',' : ''}`;
 		}
 
 		return line;
