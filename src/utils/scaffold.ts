@@ -501,7 +501,7 @@ export class Scaffold {
 			return this;
 		}
 
-		updateLine(join(this.output, 'config', `app.${this.ts ? 'ts' : 'imba'}`), (line: string) => {
+		updateLine(join(this.output, 'bootstrap', `resolvers.${this.ts ? 'ts' : 'imba'}`), (line: string) => {
 			if ([
 				`CookieServiceResolver${this.ts ? ',' : ''}`,
 				`SessionMemoryStoreServiceResolver${this.ts ? ',' : ''}`,
@@ -509,7 +509,7 @@ export class Scaffold {
 				`SessionServiceResolver${this.ts ? ',' : ''}`,
 				`CsrfServiceResolver${this.ts ? ',' : ''}`
 			].includes(line.trim())) {
-				line = `		${this.ts ? '//' : '#'} ${line.trim()}`;
+				line = `	${this.ts ? '//' : '#'} ${line.trim()}`;
 			}
 
 			return line;
