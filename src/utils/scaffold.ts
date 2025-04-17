@@ -175,7 +175,7 @@ export class Scaffold {
 			} else if (this.command.onboarding.manager == 'yarn') {
 				flags = '--no-audit --no-progress --silent';
 			} else if (this.command.onboarding.manager == 'pnpm') {
-				flags = '--silent';
+				flags = '--silent'
 			} else if (this.command.onboarding.manager == 'bun') {
 				flags = '--silent';
 			}
@@ -192,11 +192,23 @@ export class Scaffold {
 
 			packageObject.trustedDependencies = [
 				"bcrypt",
-				"esbuild",
-				"sqlite3"
+				"core-js",
+				"esbuild"
 			];
 
+			if (["sqlite3", "oracledb"].includes(this.command.onboarding.database as string)) {
+				packageObject.trustedDependencies.push(this.command.onboarding.database);
+			}
+
 			writeFileSync(packageName, JSON.stringify(packageObject, null, 4));
+		}
+
+		if (this.command.onboarding.manager == 'pnpm') {
+			flags += ' --allow-build=bcrypt --allow-build=core-js --allow-build=esbuild';
+
+			if (["sqlite3", "oracledb"].includes(this.command.onboarding.database as string)) {
+				flags += ` --allow-build=${this.command.onboarding.database}`;
+			}
 		}
 
 		/** install dependencies. */
