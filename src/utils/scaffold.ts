@@ -175,7 +175,7 @@ export class Scaffold {
 			} else if (this.command.onboarding.manager == 'yarn') {
 				flags = '--no-audit --no-progress --silent';
 			} else if (this.command.onboarding.manager == 'pnpm') {
-				flags = '--silent'
+				flags = '--silent';
 			} else if (this.command.onboarding.manager == 'bun') {
 				flags = '--silent';
 			}
