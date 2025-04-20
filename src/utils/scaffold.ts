@@ -193,22 +193,16 @@ export class Scaffold {
 			packageObject.trustedDependencies = [
 				"bcrypt",
 				"core-js",
-				"esbuild"
+				"esbuild",
+				"oracledb",
+				"sqlite3"
 			];
-
-			if (["sqlite3", "oracledb"].includes(this.command.onboarding.database as string)) {
-				packageObject.trustedDependencies.push(this.command.onboarding.database);
-			}
 
 			writeFileSync(packageName, JSON.stringify(packageObject, null, 4));
 		}
 
 		if (this.command.onboarding.manager == 'pnpm') {
-			flags += ' --allow-build=bcrypt --allow-build=core-js --allow-build=esbuild';
-
-			if (["sqlite3", "oracledb"].includes(this.command.onboarding.database as string)) {
-				flags += ` --allow-build=${this.command.onboarding.database}`;
-			}
+			flags += ' --allow-build=bcrypt --allow-build=core-js --allow-build=esbuild --allow-build=oracledb --allow-build=sqlite3';
 		}
 
 		/** install dependencies. */
