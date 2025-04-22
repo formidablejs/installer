@@ -1,6 +1,6 @@
 import { color } from '@oclif/color';
 import { execSync } from "child_process";
-import { join } from 'path';
+import New from '../commands/new';
 
 export class Publishable {
 	/**
@@ -29,12 +29,12 @@ export class Publishable {
 	 *
 	 * @returns {void}
 	 */
-	publish(verbose?: boolean): void {
+	publish(verbose?: boolean, runtime?: string): void {
 		if (verbose) {
 			console.log(color.green('Tagging') + ` ${this.package}:` + color.green(`${this.tags.join(',')}`));
 		}
 
-		execSync(`node craftsman package:publish --package=${this.package} --tag=${this.tags.join(',')} --force`, {
+		execSync(`${runtime ?? 'node'} craftsman package:publish --package=${this.package} --tag=${this.tags.join(',')} --force`, {
 			cwd: this.cwd, stdio: verbose ? 'inherit' : 'ignore'
 		});
 	}
@@ -46,13 +46,16 @@ export class Publishable {
 	 * @param {string[]} customTags
 	 * @returns {void}
 	 */
-	static make(cwd: string, extraTags?: string[], verbose?: boolean): void {
+	static make(cwd: string, extraTags?: string[], command?: New): void {
 		const publishable = new this(cwd);
 
 		if (extraTags) {
 			publishable.tags = publishable.tags.concat(extraTags)
 		}
 
-		publishable.publish(verbose);
+		publishable.publish(
+			command?.verbose ?? false,
+			command?.onboarding.manager == 'bun' ? 'bun' : 'node'
+		);
 	}
 }
