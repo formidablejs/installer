@@ -25,7 +25,7 @@ export class ViewResolverModifier extends Modifier {
 	 */
 	run(line: string, index: number): string {
 		if (line.trim().startsWith('import { TypeScriptPortsServiceResolver }')) {
-			return `${line}\nimport { ViewServiceResolver } from '@formidablejs/view/lib/ViewServiceResolver'`;
+			return `${line}\nimport { ViewServiceResolver } from '@formidablejs/view/server'`;
 		}
 
 		if (line.trim() === `TypeScriptPortsServiceResolver${this.ts ? ',' : ''}`) {
