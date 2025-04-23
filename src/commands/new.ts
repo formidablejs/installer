@@ -365,6 +365,6 @@ export default class New extends Command {
 			this.log(dim(`${space}${this.onboarding.manager} audit`));
 		}
 
-		this.log(dim(`${space}node craftsman serve --dev`));
+		this.log(dim(`${space}${this.onboarding.manager == 'bun' ? 'bun' : 'node'} craftsman serve --dev`));
 	}
 }
